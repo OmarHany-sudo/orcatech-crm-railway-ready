@@ -13,6 +13,14 @@ esac
 printf 'Listen %s\n' "$port" > /etc/apache2/ports.conf
 sed -i -E "s#<VirtualHost \\*:[0-9]+>#<VirtualHost *:${port}>#" /etc/apache2/sites-available/000-default.conf
 
+# PHP's Apache image requires exactly one MPM. Force prefork both at build and
+# runtime because inherited/conflicting modules can otherwise keep Apache down.
+for mpm in mpm_event mpm_worker mpm_prefork; do
+    a2dismod "$mpm" >/dev/null 2>&1 || true
+done
+a2enmod mpm_prefork >/dev/null
+apache2ctl configtest
+
 mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
 
@@ -24,7 +32,11 @@ apache_pid=$!
 trap 'kill "$apache_pid" 2>/dev/null || true' INT TERM EXIT
 
 if [ "${RUN_STORAGE_LINK:-true}" = "true" ]; then
-    php artisan storage:link || echo "storage:link skipped; public disk may require a mounted volume" >&2
+    if [ -L public/storage ]; then
+        echo "storage link already exists; skipping" >&2
+    else
+        php artisan storage:link || echo "storage:link skipped; public disk may require a mounted volume" >&2
+    fi
 fi
 
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then

@@ -89,7 +89,8 @@ RUN apt-get update \
         unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" bcmath curl exif gd intl mbstring pdo_mysql pdo_pgsql pcntl sockets zip \
-    && a2enmod rewrite headers expires \
+    && for mpm in mpm_event mpm_worker mpm_prefork; do a2dismod "$mpm" >/dev/null 2>&1 || true; done \
+    && a2enmod mpm_prefork rewrite headers expires \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=vendor /app/vendor ./vendor
