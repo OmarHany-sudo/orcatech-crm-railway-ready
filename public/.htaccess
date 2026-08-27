@@ -1,0 +1,34 @@
+<IfModule mod_negotiation.c>
+    Options -MultiViews -Indexes
+</IfModule>
+
+# Do not serve hidden files or project secrets from the public directory.
+<FilesMatch "^(\.|.*\.(env|ini|log|sql|bak|dist|lock))$">
+    Require all denied
+</FilesMatch>
+
+<Files "installer.php">
+    Require all denied
+</Files>
+
+RewriteEngine On
+
+# Handle Authorization Header
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Redirect trailing slashes only for non-directories.
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [L,R=301]
+
+# Send application routes to Laravel's front controller.
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]
+
+# PHP 8.3 handler used by ByetHost/cPanel-style accounts when available.
+# If the control panel manages PHP, it may safely replace this block.
+<IfModule mime_module>
+    AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
+</IfModule>

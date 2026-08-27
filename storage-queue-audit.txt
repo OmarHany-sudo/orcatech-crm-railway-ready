@@ -1,0 +1,230 @@
+=== file upload/storage usages ===
+app/Filament/App/Resources/PortalBrandingResource.php:72:                ->disk('public')
+app/Filament/App/Resources/SocialMediaPostResource.php:102:                                    ->disk('public')
+app/Filament/App/Resources/TicketResource.php:176:                    ->action(fn (Ticket $record) => Storage::disk('local')->download($record->getAttribute('attachment'))),
+app/Filament/Pages/ReportCustomizer.php:143:        Storage::put('public/reports/'.$filename, $pdf->output());
+app/Filament/Portal/Resources/TicketResource/Pages/ViewTicket.php:54:                ->action(fn () => Storage::disk('local')->download($this->getRecord()->getAttribute('attachment'))),
+app/Filament/Portal/Resources/TicketResource.php:71:                ->disk('local')
+app/Filament/Resources/TeamBackupResource.php:79:                    ->action(fn (TeamBackup $record) => Storage::disk($record->disk)->download((string) $record->path)),
+app/Filament/Resources/TeamBackupResource.php:107:                            Storage::disk($record->disk)->delete($record->path);
+app/Filament/Resources/TeamResource/Pages/ListTeams.php:34:                        ->disk('local')
+app/Http/Controllers/PublicStorageController.php:26:        $disk = Storage::disk('public');
+app/Jobs/ImportTeamBackup.php:42:        file_put_contents($tmp, (string) Storage::disk($this->disk)->get($this->path));
+app/Services/DocumentService.php:76:        return Storage::download($document->file_path, $filename);
+app/Services/DocumentService.php:84:        if (Storage::exists($document->file_path)) {
+app/Services/DocumentService.php:85:            Storage::delete($document->file_path);
+app/Services/DocumentService.php:171:        return $file->storeAs($directory, $filename);
+app/Services/TeamBackupService.php:95:        Storage::disk($disk)->put($path, (string) file_get_contents($tmp));
+app/Services/TeamBackupService.php:101:            'size' => (int) Storage::disk($disk)->size($path),
+app/Services/TeamRestoreService.php:37:        $disk = Storage::disk($backup->disk);
+app/Support/PortalBranding.php:46:            return Storage::disk('public')->url($path);
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:122:            ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
+database/migrations/2024_02_21_190705_create_permission_tables.php:130:            ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
+resources/views/filament/components/social-media-preview.blade.php:23:                            src="{{ Storage::url($getRecord()->image) }}" 
+config/filesystems.php:16:    'default' => env('FILESYSTEM_DISK', 'local'),
+=== jobs/schedule/websocket usages ===
+app/Actions/Jetstream/AddTeamMember.php:30:        AddingTeamMember::dispatch($team, $newTeamMember);
+app/Actions/Jetstream/AddTeamMember.php:44:        TeamMemberAdded::dispatch($team, $newTeamMember);
+app/Actions/Jetstream/CreateTeam.php:30:        AddingTeam::dispatch($user);
+app/Actions/Jetstream/InviteTeamMember.php:31:        InvitingTeamMember::dispatch($team, $email, $role);
+app/Actions/Jetstream/RemoveTeamMember.php:28:        TeamMemberRemoved::dispatch($team, $teamMember);
+app/Console/Commands/BackupTeam.php:35:        GenerateTeamBackup::dispatch($backup->id);
+app/Console/Commands/NotifyOverdueTasks.php:29:                    TaskOverdue::dispatch($task);
+app/Console/Commands/RestoreTeam.php:28:        RestoreTeamBackup::dispatch($backup->id);
+app/Console/Kernel.php:16:    protected function schedule(Schedule $schedule): void
+app/Console/Kernel.php:19:        $schedule->command('social-media:update-analytics')->hourly();
+app/Filament/App/Pages/TwilioIntegration.php:64:                $this->dispatch('notify', title: 'SMS sent successfully', color: 'success');
+app/Filament/App/Pages/TwilioIntegration.php:102:            $this->dispatch('notify', title: 'Bulk SMS sent successfully', color: 'success');
+app/Filament/App/Pages/TwilioIntegration.php:121:                $this->dispatch('notify', title: 'Call initiated successfully', color: 'success');
+app/Filament/App/Pages/TwilioIntegration.php:156:            $this->dispatch('notify', title: 'Bulk calls initiated successfully', color: 'success');
+app/Filament/App/Pages/TwilioIntegration.php:176:        $this->dispatch('notify', title: 'Twilio settings updated', color: 'success');
+app/Filament/Pages/ReportCustomizer.php:132:            $this->dispatch('report-exported', ['filename' => null]);
+app/Filament/Pages/ReportCustomizer.php:145:        $this->dispatch('report-exported', ['filename' => $filename]);
+app/Filament/Pages/ReportCustomizer.php:167:        $this->dispatch('report-exported', ['filename' => $filename]);
+app/Filament/Portal/Resources/TicketResource/Pages/CreateTicket.php:40:        NewTicket::dispatch($this->record);
+app/Filament/Resources/TeamBackupResource/Pages/ListTeamBackups.php:42:                    GenerateTeamBackup::dispatch($backup->id);
+app/Filament/Resources/TeamBackupResource.php:100:                        RestoreTeamBackup::dispatch($record->id, auth()->id());
+app/Filament/Resources/TeamResource/Pages/ListTeams.php:40:                    ImportTeamBackup::dispatch(
+app/Http/Controllers/LeadFormController.php:88:            ExecuteWorkflowAction::dispatch($action, $lead);
+app/Http/Livewire/CallManager.php:48:            $this->dispatch('callInitiated', $call->sid);
+app/Http/Livewire/CallManager.php:115:        $this->dispatch('notesSaved');
+app/Http/Livewire/ContactCollaboration.php:67:        $this->dispatch('contactUpdated');
+app/Http/Middleware/SetPermissionsTeamContext.php:34:        // Octane/RoadRunner reuses workers across requests — never let a team
+app/Http/Middleware/SetTenantContext.php:32:        // Octane/RoadRunner reuses workers across requests — never let a
+app/Jobs/ExecuteWorkflowAction.php:8:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/ExecuteWorkflowAction.php:13:class ExecuteWorkflowAction implements ShouldQueue
+app/Jobs/FetchGmailTickets.php:8:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/FetchGmailTickets.php:13:class FetchGmailTickets implements ShouldQueue
+app/Jobs/FetchImapTickets.php:9:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/FetchImapTickets.php:15:class FetchImapTickets implements ShouldQueue
+app/Jobs/FetchMessages.php:9:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/FetchMessages.php:14:class FetchMessages implements ShouldQueue
+app/Jobs/FetchOutlookTickets.php:9:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/FetchOutlookTickets.php:15:class FetchOutlookTickets implements ShouldQueue
+app/Jobs/FetchPop3Tickets.php:9:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/FetchPop3Tickets.php:15:class FetchPop3Tickets implements ShouldQueue
+app/Jobs/GenerateTeamBackup.php:11:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/GenerateTeamBackup.php:23:class GenerateTeamBackup implements ShouldQueue
+app/Jobs/ImportTeamBackup.php:11:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/ImportTeamBackup.php:23:class ImportTeamBackup implements ShouldQueue
+app/Jobs/RestoreTeamBackup.php:12:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/RestoreTeamBackup.php:23:class RestoreTeamBackup implements ShouldQueue
+app/Jobs/SendMarketingCampaign.php:12:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Jobs/SendMarketingCampaign.php:18:class SendMarketingCampaign implements ShouldQueue
+app/Listeners/NotifyTeamMembers.php:8:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Listeners/NotifyTeamMembers.php:10:class NotifyTeamMembers implements ShouldQueue
+app/Listeners/SendCRMEventNotification.php:6:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Listeners/SendCRMEventNotification.php:10:class SendCRMEventNotification implements ShouldQueue
+app/Livewire/CallManager.php:47:            $this->dispatch('callInitiated', sid: $call->sid);
+app/Livewire/CallManager.php:111:        $this->dispatch('notesSaved');
+app/Livewire/ContactCollaboration.php:73:        $this->dispatch('contactUpdated');
+app/Models/Deal.php:49:                DealClosed::dispatch($deal);
+app/Modules/BaseModule.php:76:        ModuleEnabled::dispatch($this);
+app/Modules/BaseModule.php:84:        ModuleDisabled::dispatch($this);
+app/Modules/BaseModule.php:93:        ModuleInstalled::dispatch($this);
+app/Modules/BaseModule.php:102:        ModuleUninstalled::dispatch($this);
+app/Notifications/CRMEventNotification.php:6:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Notifications/CRMEventNotification.php:10:class CRMEventNotification extends Notification implements ShouldQueue
+app/Notifications/DocumentSharedNotification.php:9:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Notifications/DocumentSharedNotification.php:13:class DocumentSharedNotification extends Notification implements ShouldQueue
+app/Notifications/PortalInvitation.php:8:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Notifications/PortalInvitation.php:12:class PortalInvitation extends Notification implements ShouldQueue
+app/Notifications/TaskAssignedNotification.php:7:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Notifications/TaskAssignedNotification.php:12:class TaskAssignedNotification extends Notification implements ShouldQueue
+app/Notifications/TaskReminderNotification.php:7:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Notifications/TaskReminderNotification.php:11:class TaskReminderNotification extends Notification implements ShouldQueue
+app/Notifications/TicketReplyNotification.php:9:use Illuminate\Contracts\Queue\ShouldQueue;
+app/Notifications/TicketReplyNotification.php:13:class TicketReplyNotification extends Notification implements ShouldQueue
+app/Providers/HorizonServiceProvider.php:8:use Laravel\Horizon\Horizon;
+app/Providers/HorizonServiceProvider.php:9:use Laravel\Horizon\HorizonApplicationServiceProvider;
+app/Providers/HorizonServiceProvider.php:11:class HorizonServiceProvider extends HorizonApplicationServiceProvider
+app/Providers/HorizonServiceProvider.php:21:        // Horizon::routeSmsNotificationsTo('15556667777');
+app/Providers/HorizonServiceProvider.php:22:        // Horizon::routeMailNotificationsTo('example@example.com');
+app/Providers/HorizonServiceProvider.php:23:        // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
+app/Providers/HorizonServiceProvider.php:27:     * Register the Horizon gate.
+app/Providers/HorizonServiceProvider.php:29:     * This gate determines who can access Horizon in non-local environments.
+app/Providers/HorizonServiceProvider.php:34:        Gate::define('viewHorizon', fn ($user = null) => in_array(optional($user)->email, [
+app/Services/UnifiedHelpDeskService.php:81:                            Event::dispatch(new NewMessageReceived($message));
+app/Services/UnifiedHelpDeskService.php:120:                    Event::dispatch(new NewMessageReceived($message));
+app/Services/UnifiedHelpDeskService.php:148:            Event::dispatch(new MessageReplySent($messageId, $content, $channel, $accountId));
+app/Services/UnifiedHelpDeskService.php:175:            Event::dispatch(new MessageReplySent($messageId, $content, $channel, $accountId));
+app/Services/WebhookService.php:20:    public function dispatch(string $event, array $payload): void
+modules/crm-activities-livewire/src/Components/ActivityForm.php:31:        $this->dispatch('activity-created');
+modules/crm-activities-livewire/src/Components/ActivityForm.php:39:        $this->dispatch('activity-completed');
+modules/crm-lead-capture/src/Actions/CaptureLead.php:35:            LeadCaptured::dispatch($capture);
+modules/crm-lead-capture/src/Actions/SubmitCaptureForm.php:32:            CaptureFormSubmitted::dispatch($capture);
+modules/crm-lead-capture-livewire/src/Components/CaptureForm.php:30:        $this->dispatch('lead-captured');
+modules/crm-lead-qualification/src/Actions/ConvertQualification.php:29:            QualificationConverted::dispatch($qualification);
+modules/crm-lead-qualification/src/Actions/CreateQualification.php:40:            QualificationChanged::dispatch($qualification, 'created');
+modules/crm-lead-qualification/src/Actions/DisqualifyQualification.php:27:            QualificationChanged::dispatch($qualification, 'disqualified');
+modules/crm-lead-qualification/src/Actions/EnrollNurture.php:31:            QualificationChanged::dispatch($qualification, 'nurture_enrolled');
+modules/crm-lead-qualification/src/Actions/EvaluateQualification.php:35:            QualificationChanged::dispatch($qualification, 'evaluated');
+modules/crm-lead-qualification/src/Actions/TransitionLifecycle.php:35:                QualificationChanged::dispatch($qualification, 'stage_changed');
+modules/crm-lead-qualification/src/Actions/UpdateScores.php:22:            QualificationChanged::dispatch($qualification, 'scored');
+modules/crm-lead-qualification-livewire/src/Components/QualificationForm.php:37:        $this->dispatch('qualification-saved');
+modules/crm-telephony/src/Actions/CreateTelephonyQueue.php:7:final class CreateTelephonyQueue { public function execute(int $teamId,int $actorId,array $data): TelephonyQueue { if (! app(TelephonyPolicy::class)->canManage($teamId,$actorId)) throw ValidationException::withMessages(['authorization'=>'Not authorized.']); validator($data,['name'=>['required','string','max:255'],'strategy'=>['nullable','in:ring_all,round_robin,least_calls'],'max_wait_seconds'=>['nullable','integer','min:1'],'members'=>['nullable','array']])->validate(); $queue=TelephonyQueue::query()->create(['team_id'=>$teamId,'name'=>$data['name'],'strategy'=>$data['strategy']??'ring_all','max_wait_seconds'=>$data['max_wait_seconds']??300,'members'=>$data['members']??[]]); app(TelephonyAudit::class)->record($teamId,$actorId,'queue_created',['queue_id'=>$queue->id]); return $queue; } }
+modules/crm-telephony/src/Actions/LogTelephonyCall.php:9:final class LogTelephonyCall { public function execute(int $teamId,int $actorId,array $data): TelephonyCall { if (! app(TelephonyPolicy::class)->canManage($teamId,$actorId)) throw ValidationException::withMessages(['authorization'=>'Not authorized.']); validator($data,['from_number'=>['required','string','max:32'],'to_number'=>['required','string','max:32'],'direction'=>['nullable','in:inbound,outbound'],'status'=>['nullable','string','max:50'],'idempotency_key'=>['required','string','max:255']])->validate(); return DB::transaction(function() use($teamId,$actorId,$data){ $existing=TelephonyCall::query()->where('team_id',$teamId)->where('idempotency_key',$data['idempotency_key'])->lockForUpdate()->first(); if($existing) return $existing; $call=TelephonyCall::query()->create(array_merge($data,['team_id'=>$teamId,'direction'=>$data['direction']??'inbound','status'=>$data['status']??'completed'])); app(TelephonyAudit::class)->record($teamId,$actorId,'call_logged',['call_id'=>$call->id]); CallLogged::dispatch($call); return $call; }); } }
+modules/crm-telephony/src/Queries/TelephonyQuery.php:5:final class TelephonyQuery { public function numbers(int $teamId) { return TelephonyNumber::query()->where('team_id',$teamId)->latest(); } public function queues(int $teamId) { return TelephonyQueue::query()->where('team_id',$teamId)->latest(); } public function calls(int $teamId) { return TelephonyCall::query()->where('team_id',$teamId)->latest(); } public function settings(int $teamId): ?TelephonySettings { return TelephonySettings::query()->where('team_id',$teamId)->first(); } }
+modules/crm-web-intent-livewire/src/Components/IntentDashboard.php:27:        $this->dispatch('web-intent-alert-resolved');
+modules/crm-white-label-livewire/src/Components/WhiteLabelSettings.php:42:        $this->dispatch('white-label-settings-saved');
+modules/crm-work-management-api/src/Http/Controllers/WorkManagementController.php:98:        return response()->json(['data' => WorkQueue::query()->where('team_id', $this->teamId($request))->latest()->get()->map(fn (WorkQueue $queue): array => ['id' => (string) $queue->getKey(), 'type' => 'crm-work-queue', 'attributes' => $queue->only(['name', 'description', 'status', 'rules'])])]);
+modules/crm-work-management-api/src/Http/Controllers/WorkManagementController.php:108:        $queue = WorkQueue::query()->create(array_merge($data, ['team_id' => $this->teamId($request), 'actor_id' => $request->user()->getKey()]));
+modules/crm-work-management-filament/src/Resources/WorkQueueResource/Pages/CreateWorkQueue.php:21:        return WorkQueue::query()->create(array_merge($data, ['team_id' => $teamId, 'actor_id' => auth()->id()]));
+modules/crm-work-management-filament/src/Resources/WorkQueueResource.php:20:    protected static ?string $model = WorkQueue::class;
+modules/crm-work-management-filament/src/Resources/WorkQueueResource.php:44:        return ['index' => ListWorkQueues::route('/'), 'create' => CreateWorkQueue::route('/create')];
+modules/crm-work-management-livewire/src/Components/WorkBoard.php:33:        $this->dispatch('work-item-created');
+modules/crm-work-management-livewire/src/Components/WorkBoard.php:41:        $this->dispatch('work-item-completed');
+modules/observability/CHANGELOG.md:30:- Extract Horizon/Telescope providers, Pulse gate, monitoring migrations, and actor contract.
+modules/observability/src/ObservabilityServiceProvider.php:10:use Liberu\Foundation\Observability\Providers\HorizonDashboardServiceProvider;
+modules/observability/src/ObservabilityServiceProvider.php:19:        $this->app->register(HorizonDashboardServiceProvider::class);
+modules/observability/src/Providers/HorizonDashboardServiceProvider.php:6:use Laravel\Horizon\HorizonApplicationServiceProvider;
+modules/observability/src/Providers/HorizonDashboardServiceProvider.php:9:class HorizonDashboardServiceProvider extends HorizonApplicationServiceProvider
+modules/observability/src/Providers/HorizonDashboardServiceProvider.php:18:        // Horizon::routeSmsNotificationsTo('15556667777');
+modules/observability/src/Providers/HorizonDashboardServiceProvider.php:19:        // Horizon::routeMailNotificationsTo('example@example.com');
+modules/observability/src/Providers/HorizonDashboardServiceProvider.php:20:        // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
+modules/observability/src/Providers/HorizonDashboardServiceProvider.php:24:     * Register the Horizon gate.
+modules/observability/src/Providers/HorizonDashboardServiceProvider.php:26:     * This gate determines who can access Horizon in non-local environments.
+modules/observability/src/Providers/HorizonDashboardServiceProvider.php:30:        Gate::define('viewHorizon', function (?ObservabilityActor $user = null) {
+modules/scheduler-queues/src/SchedulerQueuesServiceProvider.php:12:        Schedule::command('backup:clean')->daily()->at('01:00')->onOneServer();
+modules/scheduler-queues/src/SchedulerQueuesServiceProvider.php:13:        Schedule::command('backup:run', ['--only-db'])->daily()->at('01:30')->onOneServer()->withoutOverlapping();
+modules/theme-support/src/Providers/ThemeServiceProvider.php:45:            // is a singleton resolved once per app lifecycle (long-lived under Octane;
+modules/theme-support-livewire/src/Livewire/ThemeSwitcher.php:33:        $this->dispatch('theme-changed', theme: $theme);
+routes/console.php:11:Schedule::command('social-media:publish-scheduled')->everyMinute();
+routes/console.php:12:Schedule::command('social-media:update-analytics')->hourly();
+routes/console.php:13:Schedule::command('tasks:notify-overdue')->dailyAt('07:00');
+routes/console.php:14:Schedule::command('backup:run')->dailyAt('02:00');
+routes/console.php:15:Schedule::command('backup:clean')->dailyAt('03:00');
+config/horizon.php:9:    | Horizon Name
+config/horizon.php:12:    | This name appears in notifications and in the Horizon UI. Unique names
+config/horizon.php:13:    | can be useful while running multiple instances of Horizon within an
+config/horizon.php:14:    | application, allowing you to identify the Horizon you're viewing.
+config/horizon.php:22:    | Horizon Domain
+config/horizon.php:25:    | This is the subdomain where Horizon will be accessible from. If this
+config/horizon.php:26:    | setting is null, Horizon will reside under the same domain as the
+config/horizon.php:35:    | Horizon Path
+config/horizon.php:38:    | This is the URI path where Horizon will be accessible from. Feel free
+config/horizon.php:48:    | Horizon Redis Connection
+config/horizon.php:51:    | This is the name of the Redis connection where Horizon will store the
+config/horizon.php:61:    | Horizon Redis Prefix
+config/horizon.php:64:    | This prefix will be used when storing all Horizon data in Redis. You
+config/horizon.php:66:    | of Horizon on the same server so that they don't have problems.
+config/horizon.php:77:    | Horizon Route Middleware
+config/horizon.php:80:    | These middleware will get attached onto each Horizon route, giving you
+config/horizon.php:108:    | Here you can configure for how long (in minutes) you desire Horizon to
+config/horizon.php:128:    | Silencing a job will instruct Horizon to not place the job in the list
+config/horizon.php:129:    | of completed jobs within the Horizon dashboard. This setting may be
+config/horizon.php:148:    | the metrics graph. This will get used in combination with Horizon's
+config/horizon.php:165:    | When this option is enabled, Horizon's "terminate" command will not
+config/horizon.php:168:    | allowing a new instance of Horizon to start while the last
+config/horizon.php:180:    | This value describes the maximum amount of memory the Horizon master
+config/horizon.php:195:    | queued jobs and will be provisioned by Horizon during deployment.
+config/horizon.php:238:    | changed, Horizon will automatically restart to apply all changes.
+config/octane.php:3:use Laravel\Octane\Contracts\OperationTerminated;
+config/octane.php:4:use Laravel\Octane\Events\RequestHandled;
+config/octane.php:5:use Laravel\Octane\Events\RequestReceived;
+config/octane.php:6:use Laravel\Octane\Events\RequestTerminated;
+config/octane.php:7:use Laravel\Octane\Events\TaskReceived;
+config/octane.php:8:use Laravel\Octane\Events\TaskTerminated;
+config/octane.php:9:use Laravel\Octane\Events\TickReceived;
+config/octane.php:10:use Laravel\Octane\Events\TickTerminated;
+config/octane.php:11:use Laravel\Octane\Events\WorkerErrorOccurred;
+config/octane.php:12:use Laravel\Octane\Events\WorkerStarting;
+config/octane.php:13:use Laravel\Octane\Events\WorkerStopping;
+config/octane.php:14:use Laravel\Octane\Listeners\CloseMonologHandlers;
+config/octane.php:15:use Laravel\Octane\Listeners\CollectGarbage;
+config/octane.php:16:use Laravel\Octane\Listeners\DisconnectFromDatabases;
+config/octane.php:17:use Laravel\Octane\Listeners\EnsureUploadedFilesAreValid;
+config/octane.php:18:use Laravel\Octane\Listeners\EnsureUploadedFilesCanBeMoved;
+config/octane.php:19:use Laravel\Octane\Listeners\FlushOnce;
+config/octane.php:20:use Laravel\Octane\Listeners\FlushTemporaryContainerInstances;
+config/octane.php:21:use Laravel\Octane\Listeners\FlushUploadedFiles;
+config/octane.php:22:use Laravel\Octane\Listeners\ReportException;
+config/octane.php:23:use Laravel\Octane\Listeners\StopWorkerIfNecessary;
+config/octane.php:24:use Laravel\Octane\Octane;
+config/octane.php:30:    | Octane Server
+config/octane.php:33:    | This value determines the default "server" that will be used by Octane
+config/octane.php:48:    | When this configuration value is set to "true", Octane will inform the
+config/octane.php:58:    | Octane Listeners
+config/octane.php:61:    | All of the event listeners for Octane's events are defined below. These
+config/octane.php:74:            ...Octane::prepareApplicationForNextOperation(),
+config/octane.php:75:            ...Octane::prepareApplicationForNextRequest(),
+config/octane.php:88:            ...Octane::prepareApplicationForNextOperation(),
+config/octane.php:97:            ...Octane::prepareApplicationForNextOperation(),
+config/octane.php:134:        ...Octane::defaultServicesToWarm(),
+config/octane.php:143:    | Octane Swoole Tables
+config/octane.php:161:    | Octane Swoole Cache Table
+config/octane.php:164:    | While using Swoole, you may leverage the Octane cache, which is powered
+config/octane.php:181:    | the --watch option offered by Octane. If any of the directories and
+config/octane.php:182:    | files are changed, Octane will automatically reload your workers.
+config/octane.php:203:    | When executing long-lived PHP scripts such as Octane, memory can build
+config/octane.php:204:    | up before being cleared by PHP. You can force Octane to run garbage
+config/octane.php:217:    | being handled by Octane. You may set this value to 0 to indicate that
+config/octane.php:218:    | there isn't a specific time limit on Octane request execution time.
+config/permission.php:111:     * When set to true, Laravel\Octane\Events\OperationTerminated event listener will be registered
+config/permission.php:113:     * NOTE: This should not be needed in most cases, but an Octane/Vapor combination benefited from it.
+config/reverb.php:7:    | Default Reverb Server
+config/reverb.php:10:    | This option controls the default server used by Reverb to handle
+config/reverb.php:20:    | Reverb Servers
+config/reverb.php:23:    | Here you may define details for each of the supported Reverb servers.
+config/reverb.php:61:    | Reverb Applications
+config/reverb.php:64:    | Here you may define how Reverb applications are managed. If you choose

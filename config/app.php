@@ -1,0 +1,36 @@
+<?php
+
+return [
+
+    'name' => env('APP_NAME', 'Laravel'),
+
+    'env' => env('APP_ENV', 'production'),
+
+    'debug' => (bool) env('APP_DEBUG', false),
+
+    'url' => env('APP_URL', 'https://example.com'),
+
+    'asset_url' => env('ASSET_URL'),
+
+    'timezone' => 'UTC',
+
+    'locale' => env('APP_LOCALE', 'en'),
+
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+
+    'supported_locales' => [
+        'en' => 'English',
+        'ar' => 'العربية',
+    ],
+
+    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+
+    'key' => env('APP_KEY'),
+
+    'cipher' => 'AES-256-CBC',
+
+    'maintenance' => [
+        'driver' => 'file',
+    ],
+
+];

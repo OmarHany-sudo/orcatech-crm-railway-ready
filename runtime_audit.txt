@@ -1,0 +1,169 @@
+=== .docker/start-container ===
+#!/usr/bin/env sh
+set -e
+
+container_mode=${CONTAINER_MODE:-"http"}
+running_migrations_and_seeders=${RUNNING_MIGRATIONS_AND_SEEDERS:-"false"}
+
+initialStuff() {
+    echo "Container mode: $container_mode"
+
+    if [ "${running_migrations_and_seeders}" = "true" ]; then
+        echo "Running migrations and seeding database ..."
+        php artisan migrate --isolated --seed --force || php artisan migrate --seed --force
+    fi
+
+    php artisan storage:link
+    php artisan optimize
+}
+
+if [ "$1" != "" ]; then
+    exec "$@"
+elif [ "${container_mode}" = "http" ]; then
+    initialStuff
+    echo "Octane Server: $OCTANE_SERVER"
+
+    if [ "${OCTANE_SERVER}" = "roadrunner" ]; then
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.roadrunner.conf
+    elif [ "${OCTANE_SERVER}" = "swoole" ]; then
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.swoole.conf
+    elif [ "${OCTANE_SERVER}" = "frankenphp" ]; then
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.frankenphp.conf
+    else
+        echo "Invalid Octane server supplied."
+        exit 1
+    fi
+elif [ "${container_mode}" = "horizon" ]; then
+    initialStuff
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
+elif [ "${container_mode}" = "reverb" ]; then
+    initialStuff
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.reverb.conf
+elif [ "${container_mode}" = "scheduler" ]; then
+    initialStuff
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
+elif [ "${container_mode}" = "worker" ]; then
+    if [ -z "${WORKER_COMMAND}" ]; then
+        echo "WORKER_COMMAND is undefined."
+        exit 1
+    fi
+    initialStuff
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.worker.conf
+else
+    echo "Container mode mismatched."
+    exit 1
+fi
+=== .docker/supervisord.conf ===
+[supervisord]
+nodaemon = true
+user = %(ENV_USER)s
+
+[supervisorctl]
+
+[inet_http_server]
+port = 127.0.0.1:9001
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+=== .docker/php.ini ===
+[PHP]
+post_max_size = 420M
+upload_max_filesize = 400M
+expose_php = 0
+realpath_cache_size = 32M
+realpath_cache_ttl = 720
+memory_limit = 256M
+max_input_time = 5
+register_argc_argv = 0
+date.timezone = ${TZ:-UTC}
+
+[Opcache]
+opcache.enable = 1
+opcache.enable_cli = 1
+opcache.memory_consumption = 256
+opcache.use_cwd = 0
+opcache.save_comments = 1
+opcache.max_file_size = 0
+opcache.max_accelerated_files = 32531
+opcache.validate_timestamps = 0
+opcache.file_update_protection = 0
+opcache.interned_strings_buffer = 16
+opcache.enable_file_override = 1
+opcache.file_cache_consistency_checks = 0
+opcache.file_cache = /tmp/opcache-file-cache
+
+[JIT]
+opcache.jit_buffer_size = 128M
+opcache.jit = tracing
+opcache.jit_hot_loop = 16
+opcache.jit_hot_func = 32
+opcache.jit_hot_return = 4
+opcache.jit_max_root_traces = 2048
+opcache.jit_max_side_traces = 256
+=== .docker/supervisord.worker.conf ===
+[program:worker]
+process_name = %(program_name)s_%(process_num)s
+command = %(ENV_WORKER_COMMAND)s
+user = %(ENV_USER)s
+autostart = true
+autorestart = true
+stopasgroup = true
+killasgroup = true
+stdout_logfile = /dev/stdout
+stdout_logfile_maxbytes = 0
+stderr_logfile = /dev/stderr
+stderr_logfile_maxbytes = 0
+
+[include]
+files = /etc/supervisor/supervisord.conf
+=== .docker/supervisord.scheduler.conf ===
+[program:scheduler]
+process_name = %(program_name)s_%(process_num)s
+command = supercronic -overlapping /etc/supercronic/laravel
+user = %(ENV_USER)s
+autostart = true
+autorestart = true
+stopasgroup = true
+killasgroup = true
+stdout_logfile = /dev/stdout
+stdout_logfile_maxbytes = 0
+stderr_logfile = /dev/stderr
+stderr_logfile_maxbytes = 0
+
+[program:clear-scheduler-cache]
+process_name = %(program_name)s_%(process_num)s
+command = php %(ENV_ROOT)s/artisan schedule:clear-cache
+user = %(ENV_USER)s
+autostart = true
+autorestart = false
+startsecs = 0
+startretries = 1
+stdout_logfile = /dev/stdout
+stdout_logfile_maxbytes = 0
+stderr_logfile = /dev/stderr
+stderr_logfile_maxbytes = 0
+
+[include]
+files = /etc/supervisor/supervisord.conf
+=== README deployment mentions ===
+5:[![Docker](https://github.com/liberusoftware/crm-laravel/actions/workflows/main.yml/badge.svg)](https://github.com/liberusoftware/crm-laravel/actions/workflows/main.yml)
+12:It is built for teams that need control over their data and integrations. The application can be self-hosted, extended with Laravel, and operated with the included Docker and Kubernetes configuration.
+27:- PHP 8.5+
+32:- Laravel Sanctum, Octane, Horizon, and Reverb
+40:Install PHP 8.5 or newer with Composer, Node.js and npm, and one of the supported databases. Redis is required for queue, cache, or real-time features that use it.
+73:### Docker Compose
+75:The repository includes a PHP 8.5 application image and services for MySQL and Redis:
+79:docker compose up -d --build
+80:docker compose exec app php artisan migrate --seed
+86:docker compose --profile horizon --profile reverb --profile worker --profile mail up -d
+89:Kubernetes manifests and validation scripts are available under [`k8s/`](k8s/). Review secrets and storage settings before deploying to a shared or production cluster.
+93:Start with [`.env.example`](.env.example). Keep application keys, OAuth secrets, webhook secrets, and service credentials outside the repository. Configure only the integrations required by your deployment.
+95:The application supports team-aware settings and encrypted credentials for integrations. Queue workers, scheduled tasks, Horizon, Reverb, and tenancy should be configured according to the deployment environment rather than enabled blindly in development.
+=== existing health routes ===
+routes/web.php:23:// Health check endpoints (for Kubernetes liveness/readiness probes)
+routes/web.php:24:Route::get('/health/startup', fn () => response()->json(['status' => 'starting']))->name('health.startup');
+routes/web.php:25:Route::get('/health/live', fn () => response()->json(['status' => 'live']))->name('health.live');
+routes/web.php:26:Route::get('/health/ready', function () {
+routes/web.php:30:        return response()->json(['status' => 'ready']);
+routes/web.php:32:        return response()->json(['status' => 'not ready', 'error' => 'Database unavailable'], 503);
+routes/web.php:34:})->name('health.ready');

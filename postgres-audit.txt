@@ -1,0 +1,1103 @@
+=== raw SQL files ===
+app/Filament/Admin/Resources/ContactResource/Widgets/ContactStats.php
+app/Filament/App/Widgets/Home/AdvancedAnalytics.php
+app/Models/User.php
+app/Services/ReportingService.php
+database/migrations/2026_07_07_120000_add_team_id_to_tickets_table.php
+modules/crm-work-management/src/Services/WorkloadQuery.php
+=== key raw snippets ===
+app/Filament/Admin/Resources/ContactResource/Widgets/ContactStats.php:22:            ->select('category', DB::raw('count(*) as total'))
+app/Filament/App/Widgets/Home/AdvancedAnalytics.php:44:            ->selectRaw('COALESCE(stage, ?) as stage_label', ['prospect'])
+app/Filament/App/Widgets/Home/AdvancedAnalytics.php:45:            ->selectRaw('COUNT(*) as aggregate')
+app/Filament/App/Widgets/Home/AdvancedAnalytics.php:46:            ->selectRaw('SUM(value) as stage_value')
+app/Filament/App/Widgets/Home/AdvancedAnalytics.php:61:            ->selectRaw("COALESCE(source, 'other') as source_label")
+app/Filament/App/Widgets/Home/AdvancedAnalytics.php:62:            ->selectRaw('COUNT(*) as aggregate')
+app/Http/Controllers/LeadFormController.php:78:        $workflows = Workflow::whereJsonContains('triggers->type', 'lead_created')->get();
+app/Models/Contact.php:152:                ->orWhere(fn (Builder $cq) => $cq->whereJsonContains('custom_fields', $search));
+app/Models/Lead.php:157:                    $query->whereJsonContains('custom_fields', $search);
+app/Models/User.php:175:            ->whereRaw('LOWER('.$tables['roles'].'.name) = ?', [strtolower($roleName)])
+app/Models/User.php:254:            ->whereRaw('LOWER('.$tables['roles'].'.name) = ?', [$roleName])
+app/Services/ReportingService.php:15:        $query = Contact::select('contacts.*', DB::raw('COUNT(activities.id) as activities_count'))
+app/Services/ReportingService.php:38:            DB::raw('COUNT(*) as count'),
+app/Services/ReportingService.php:39:            DB::raw('SUM(value) as total_value'),
+app/Services/ReportingService.php:40:            DB::raw('AVG(probability) as avg_probability')
+app/Services/ReportingService.php:59:        $dateExpression = DB::raw('DATE(created_at)');
+app/Services/ReportingService.php:62:            DB::raw('DATE(created_at) as date'),
+app/Services/ReportingService.php:63:            DB::raw('COUNT(*) as count')
+app/Services/ReportingService.php:77:        $query = Lead::select('lifecycle_stage', DB::raw('AVG(score) as average_score'), DB::raw('COUNT(*) as count'));
+app/Services/ReportingService.php:96:        $query = Lead::select(DB::raw('FLOOR(score / 10) * 10 as score_range'), DB::raw('COUNT(*) as count'));
+app/Services/WebhookService.php:23:            ->whereJsonContains('events', $event)
+database/migrations/2026_07_07_120000_add_team_id_to_tickets_table.php:28:            'team_id' => DB::raw('(select current_team_id from users where users.id = tickets.user_id)'),
+modules/crm-work-management/src/Services/WorkloadQuery.php:15:        return WorkItem::query()->where('team_id', $teamId)->whereNotIn('status', ['completed', 'cancelled'])->selectRaw('assigned_to, count(*) as open_count, sum(case when due_at < ? then 1 else 0 end) as overdue_count', [now()])->groupBy('assigned_to')->orderByDesc('open_count')->get();
+=== migrations with driver branches ===
+database/migrations/0001_01_01_000000_create_users_table.php:14:        Schema::create('users', function (Blueprint $table): void {
+database/migrations/0001_01_01_000000_create_users_table.php:26:        Schema::create('password_reset_tokens', function (Blueprint $table): void {
+database/migrations/0001_01_01_000000_create_users_table.php:32:        Schema::create('sessions', function (Blueprint $table): void {
+database/migrations/0001_01_01_000000_create_users_table.php:47:        Schema::dropIfExists('users');
+database/migrations/0001_01_01_000000_create_users_table.php:48:        Schema::dropIfExists('password_reset_tokens');
+database/migrations/0001_01_01_000000_create_users_table.php:49:        Schema::dropIfExists('sessions');
+database/migrations/0001_01_01_000001_create_cache_table.php:14:        Schema::create('cache', function (Blueprint $table) {
+database/migrations/0001_01_01_000001_create_cache_table.php:20:        Schema::create('cache_locks', function (Blueprint $table) {
+database/migrations/0001_01_01_000001_create_cache_table.php:32:        Schema::dropIfExists('cache');
+database/migrations/0001_01_01_000001_create_cache_table.php:33:        Schema::dropIfExists('cache_locks');
+database/migrations/0001_01_01_000001_make_password_nullable_on_users_table.php:14:        Schema::table('users', function (Blueprint $table): void {
+database/migrations/0001_01_01_000001_make_password_nullable_on_users_table.php:24:        Schema::table('users', function (Blueprint $table): void {
+database/migrations/0001_01_01_000002_create_connected_accounts_table.php:14:        Schema::create('connected_accounts', function (Blueprint $table): void {
+database/migrations/0001_01_01_000002_create_connected_accounts_table.php:40:        Schema::dropIfExists('connected_accounts');
+database/migrations/0001_01_01_000002_create_jobs_table.php:14:        Schema::create('jobs', function (Blueprint $table) {
+database/migrations/0001_01_01_000002_create_jobs_table.php:24:        Schema::create('job_batches', function (Blueprint $table) {
+database/migrations/0001_01_01_000002_create_jobs_table.php:37:        Schema::create('failed_jobs', function (Blueprint $table) {
+database/migrations/0001_01_01_000002_create_jobs_table.php:55:        Schema::dropIfExists('jobs');
+database/migrations/0001_01_01_000002_create_jobs_table.php:56:        Schema::dropIfExists('job_batches');
+database/migrations/0001_01_01_000002_create_jobs_table.php:57:        Schema::dropIfExists('failed_jobs');
+database/migrations/2014_10_12_200000_add_two_factor_columns_to_users_table.php:15:        Schema::table('users', function (Blueprint $table): void {
+database/migrations/2014_10_12_200000_add_two_factor_columns_to_users_table.php:37:        Schema::table('users', function (Blueprint $table): void {
+database/migrations/2019_09_15_000010_create_tenants_table.php:16:        Schema::create('tenants', function (Blueprint $table): void {
+database/migrations/2019_09_15_000010_create_tenants_table.php:31:        Schema::dropIfExists('tenants');
+database/migrations/2019_12_14_000001_create_personal_access_tokens_table.php:14:        Schema::create('personal_access_tokens', function (Blueprint $table) {
+database/migrations/2019_12_14_000001_create_personal_access_tokens_table.php:31:        Schema::dropIfExists('personal_access_tokens');
+database/migrations/2020_05_21_100000_create_teams_table.php:14:        Schema::create('teams', function (Blueprint $table): void {
+database/migrations/2020_05_21_100000_create_teams_table.php:28:        Schema::dropIfExists('teams');
+database/migrations/2020_05_21_200000_create_team_user_table.php:14:        Schema::create('team_user', function (Blueprint $table): void {
+database/migrations/2020_05_21_200000_create_team_user_table.php:30:        Schema::dropIfExists('team_user');
+database/migrations/2020_05_21_300000_create_team_invitations_table.php:14:        Schema::create('team_invitations', function (Blueprint $table): void {
+database/migrations/2020_05_21_300000_create_team_invitations_table.php:31:        Schema::dropIfExists('team_invitations');
+database/migrations/2020_06_30_135250_create_activations_table.php:14:        Schema::create('activations', function (Blueprint $table): void {
+database/migrations/2020_06_30_135250_create_activations_table.php:28:        Schema::dropIfExists('activations');
+database/migrations/2022_10_30_150853_create_companies_table.php:11:        Schema::create('companies', function (Blueprint $table): void {
+database/migrations/2022_10_30_150853_create_companies_table.php:28:        Schema::dropIfExists('companies');
+database/migrations/2023_01_20_000003_update_companies_table.php:13:        Schema::table('companies', function (Blueprint $table): void {
+database/migrations/2023_01_20_000003_update_companies_table.php:22:        Schema::table('companies', function (Blueprint $table): void {
+database/migrations/2023_01_31_124707_create_contacts_table.php:14:        Schema::create('contacts', function (Blueprint $table): void {
+database/migrations/2023_01_31_124707_create_contacts_table.php:29:        Schema::dropIfExists('contacts');
+database/migrations/2023_05_01_000000_create_landing_pages_table.php:11:        Schema::create('landing_pages', function (Blueprint $table): void {
+database/migrations/2023_05_01_000000_create_landing_pages_table.php:24:        Schema::dropIfExists('landing_pages');
+database/migrations/2023_05_15_000000_create_site_settings_table.php:14:        if (! Schema::hasTable('settings')) {
+database/migrations/2023_05_15_000000_create_site_settings_table.php:15:            Schema::create('settings', function (Blueprint $table): void {
+database/migrations/2023_05_15_000000_create_site_settings_table.php:31:        Schema::dropIfExists('settings');
+database/migrations/2023_05_20_000000_create_call_settings_table.php:11:        Schema::create('call_settings', function (Blueprint $table): void {
+database/migrations/2023_05_20_000000_create_call_settings_table.php:22:        Schema::dropIfExists('call_settings');
+database/migrations/2023_05_20_000000_create_social_media_posts_table.php:11:        Schema::create('social_media_posts', function (Blueprint $table): void {
+database/migrations/2023_05_20_000000_create_social_media_posts_table.php:29:        Schema::dropIfExists('social_media_posts');
+database/migrations/2023_05_20_000000_enhance_crm_tables.php:13:        if (! Schema::hasTable('leads')) {
+database/migrations/2023_05_20_000000_enhance_crm_tables.php:14:            Schema::create('leads', function (Blueprint $table): void {
+database/migrations/2023_05_20_000000_enhance_crm_tables.php:34:        Schema::dropIfExists('leads');
+database/migrations/2023_05_20_000001_create_marketing_campaigns_table.php:11:        Schema::create('marketing_campaigns', function (Blueprint $table): void {
+database/migrations/2023_05_20_000001_create_marketing_campaigns_table.php:14:            $table->enum('type', ['email', 'sms', 'whatsapp']);
+database/migrations/2023_05_20_000001_create_marketing_campaigns_table.php:15:            $table->enum('status', ['draft', 'scheduled', 'sent', 'cancelled']);
+database/migrations/2023_05_20_000001_create_marketing_campaigns_table.php:25:        Schema::dropIfExists('marketing_campaigns');
+database/migrations/2023_05_20_000002_create_campaign_recipients_table.php:11:        Schema::create('campaign_recipients', function (Blueprint $table): void {
+database/migrations/2023_05_20_000002_create_campaign_recipients_table.php:18:            $table->enum('status', ['pending', 'sent', 'failed']);
+database/migrations/2023_05_20_000002_create_campaign_recipients_table.php:27:        Schema::dropIfExists('campaign_recipients');
+database/migrations/2023_05_20_000004_create_pipelines_table.php:13:        Schema::create('pipelines', function (Blueprint $table): void {
+database/migrations/2023_05_20_000004_create_pipelines_table.php:24:        Schema::dropIfExists('pipelines');
+database/migrations/2023_05_24_create_lead_forms_table.php:11:        Schema::create('lead_forms', function (Blueprint $table): void {
+database/migrations/2023_05_24_create_lead_forms_table.php:22:        Schema::dropIfExists('lead_forms');
+database/migrations/2023_05_25_000000_create_custom_fields_table.php:13:        Schema::create('custom_fields', function (Blueprint $table): void {
+database/migrations/2023_05_25_000000_create_custom_fields_table.php:25:        Schema::dropIfExists('custom_fields');
+database/migrations/2023_05_25_000001_add_contacts_email_index.php:16:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2023_05_25_000001_add_contacts_email_index.php:26:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2023_05_25_000001_add_custom_fields_to_contacts_table.php:13:        //        Schema::table('contacts', function (Blueprint $table) {
+database/migrations/2023_05_25_000001_add_custom_fields_to_contacts_table.php:20:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2023_05_25_000002_add_custom_fields_to_leads_table.php:13:        //        Schema::table('leads', function (Blueprint $table) {
+database/migrations/2023_05_25_000002_add_custom_fields_to_leads_table.php:20:        Schema::table('leads', function (Blueprint $table): void {
+database/migrations/2023_06_01_000000_create_leads_table.php:12:        if (Schema::hasTable('leads') && ! Schema::hasColumn('leads', 'contact_id')) {
+database/migrations/2023_06_01_000000_create_leads_table.php:13:            Schema::table('leads', function (Blueprint $table): void {
+database/migrations/2023_06_01_000000_create_leads_table.php:21:        if (Schema::hasTable('leads') && Schema::hasColumn('leads', 'contact_id')) {
+database/migrations/2023_06_01_000000_create_leads_table.php:22:            Schema::table('leads', function (Blueprint $table): void {
+database/migrations/2023_06_02_000000_create_workflows_table.php:13:        Schema::create('workflows', function (Blueprint $table): void {
+database/migrations/2023_06_02_000000_create_workflows_table.php:25:        Schema::dropIfExists('workflows');
+database/migrations/2023_10_31_125000_create_opportunities_table.php:14:        Schema::create('opportunities', function (Blueprint $table): void {
+database/migrations/2023_10_31_125000_create_opportunities_table.php:28:        Schema::dropIfExists('opportunities');
+database/migrations/2023_10_31_125013_create_notes_table.php:14:        Schema::create('notes', function (Blueprint $table): void {
+database/migrations/2023_10_31_125013_create_notes_table.php:29:        Schema::dropIfExists('notes');
+database/migrations/2023_10_31_150226_create_tasks_table.php:14:        Schema::create('tasks', function (Blueprint $table): void {
+database/migrations/2023_10_31_150226_create_tasks_table.php:40:        Schema::dropIfExists('tasks');
+database/migrations/2024_01_01_000000_create_deals_table.php:13:        Schema::create('deals', function (Blueprint $table): void {
+database/migrations/2024_01_01_000000_create_deals_table.php:28:        Schema::dropIfExists('deals');
+database/migrations/2024_01_02_000000_create_stages_table.php:13:        Schema::create('stages', function (Blueprint $table): void {
+database/migrations/2024_01_02_000000_create_stages_table.php:24:        Schema::dropIfExists('stages');
+database/migrations/2024_01_10_000000_create_oauth_configurations_table.php:13:        Schema::create('oauth_configurations', function (Blueprint $table): void {
+database/migrations/2024_01_10_000000_create_oauth_configurations_table.php:25:        Schema::dropIfExists('oauth_configurations');
+database/migrations/2024_01_10_000000_create_team_subscriptions_table.php:11:        Schema::create('team_subscriptions', function (Blueprint $table): void {
+database/migrations/2024_01_10_000000_create_team_subscriptions_table.php:27:        Schema::dropIfExists('team_subscriptions');
+database/migrations/2024_02_15_000000_create_emails_table.php:13:        Schema::create('emails', function (Blueprint $table): void {
+database/migrations/2024_02_15_000000_create_emails_table.php:28:        Schema::dropIfExists('emails');
+database/migrations/2024_02_15_000001_create_email_tracking_tables.php:11:        Schema::create('email_trackings', function (Blueprint $table): void {
+database/migrations/2024_02_15_000001_create_email_tracking_tables.php:46:        Schema::create('email_link_clicks', function (Blueprint $table): void {
+database/migrations/2024_02_15_000001_create_email_tracking_tables.php:59:        Schema::create('email_templates', function (Blueprint $table): void {
+database/migrations/2024_02_15_000001_create_email_tracking_tables.php:79:        Schema::dropIfExists('email_link_clicks');
+database/migrations/2024_02_15_000001_create_email_tracking_tables.php:80:        Schema::dropIfExists('email_trackings');
+database/migrations/2024_02_15_000001_create_email_tracking_tables.php:81:        Schema::dropIfExists('email_templates');
+database/migrations/2024_02_15_000002_create_workflow_automation_tables.php:11:        Schema::create('workflow_triggers', function (Blueprint $table): void {
+database/migrations/2024_02_15_000002_create_workflow_automation_tables.php:23:        Schema::create('workflow_actions', function (Blueprint $table): void {
+database/migrations/2024_02_15_000002_create_workflow_automation_tables.php:39:        Schema::create('workflow_conditions', function (Blueprint $table): void {
+database/migrations/2024_02_15_000002_create_workflow_automation_tables.php:49:        Schema::create('workflow_executions', function (Blueprint $table): void {
+database/migrations/2024_02_15_000002_create_workflow_automation_tables.php:69:        Schema::dropIfExists('workflow_executions');
+database/migrations/2024_02_15_000002_create_workflow_automation_tables.php:70:        Schema::dropIfExists('workflow_conditions');
+database/migrations/2024_02_15_000002_create_workflow_automation_tables.php:71:        Schema::dropIfExists('workflow_actions');
+database/migrations/2024_02_15_000002_create_workflow_automation_tables.php:72:        Schema::dropIfExists('workflow_triggers');
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:12:        if (Schema::hasTable('connected_accounts')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:13:            Schema::table('connected_accounts', function (Blueprint $table): void {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:14:                if (! Schema::hasColumn('connected_accounts', 'metadata')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:17:                if (! Schema::hasColumn('connected_accounts', 'account_type')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:20:                if (! Schema::hasColumn('connected_accounts', 'is_primary')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:27:        if (Schema::hasTable('contacts') && ! Schema::hasColumn('contacts', 'metadata')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:28:            Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:36:        if (Schema::hasTable('connected_accounts')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:37:            Schema::table('connected_accounts', function (Blueprint $table): void {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:38:                if (Schema::hasColumn('connected_accounts', 'metadata')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:41:                if (Schema::hasColumn('connected_accounts', 'account_type')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:44:                if (Schema::hasColumn('connected_accounts', 'is_primary')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:50:        if (Schema::hasTable('contacts') && Schema::hasColumn('contacts', 'metadata')) {
+database/migrations/2024_02_15_000003_enhance_oauth_and_contacts.php:51:            Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2024_02_15_000004_create_reporting_tables.php:11:        Schema::create('report_builders', function (Blueprint $table): void {
+database/migrations/2024_02_15_000004_create_reporting_tables.php:35:        Schema::create('sales_forecasts', function (Blueprint $table): void {
+database/migrations/2024_02_15_000004_create_reporting_tables.php:58:        Schema::dropIfExists('sales_forecasts');
+database/migrations/2024_02_15_000004_create_reporting_tables.php:59:        Schema::dropIfExists('report_builders');
+database/migrations/2024_02_15_000005_create_chat_tables.php:11:        Schema::create('live_chats', function (Blueprint $table): void {
+database/migrations/2024_02_15_000005_create_chat_tables.php:36:        Schema::create('chatbots', function (Blueprint $table): void {
+database/migrations/2024_02_15_000005_create_chat_tables.php:52:        Schema::create('chatbot_interactions', function (Blueprint $table): void {
+database/migrations/2024_02_15_000005_create_chat_tables.php:71:        Schema::dropIfExists('chatbot_interactions');
+database/migrations/2024_02_15_000005_create_chat_tables.php:72:        Schema::dropIfExists('chatbots');
+database/migrations/2024_02_15_000005_create_chat_tables.php:73:        Schema::dropIfExists('live_chats');
+database/migrations/2024_02_15_000006_enhance_workflows_table.php:12:        if (Schema::hasTable('workflows')) {
+database/migrations/2024_02_15_000006_enhance_workflows_table.php:13:            Schema::table('workflows', function (Blueprint $table): void {
+database/migrations/2024_02_15_000006_enhance_workflows_table.php:14:                if (! Schema::hasColumn('workflows', 'is_active')) {
+database/migrations/2024_02_15_000006_enhance_workflows_table.php:17:                if (! Schema::hasColumn('workflows', 'metadata')) {
+database/migrations/2024_02_15_000006_enhance_workflows_table.php:26:        if (Schema::hasTable('workflows')) {
+database/migrations/2024_02_15_000006_enhance_workflows_table.php:27:            Schema::table('workflows', function (Blueprint $table): void {
+database/migrations/2024_02_15_000006_enhance_workflows_table.php:28:                if (Schema::hasColumn('workflows', 'is_active')) {
+database/migrations/2024_02_15_000006_enhance_workflows_table.php:31:                if (Schema::hasColumn('workflows', 'metadata')) {
+database/migrations/2024_02_21_190705_create_permission_tables.php:27:        Schema::create($tableNames['permissions'], function (Blueprint $table): void {
+database/migrations/2024_02_21_190705_create_permission_tables.php:36:        Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames): void {
+database/migrations/2024_02_21_190705_create_permission_tables.php:38:            if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
+database/migrations/2024_02_21_190705_create_permission_tables.php:52:        Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams): void {
+database/migrations/2024_02_21_190705_create_permission_tables.php:82:        Schema::create($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams): void {
+database/migrations/2024_02_21_190705_create_permission_tables.php:112:        Schema::create($tableNames['role_has_permissions'], function (Blueprint $table) use ($tableNames, $pivotRole, $pivotPermission): void {
+database/migrations/2024_02_21_190705_create_permission_tables.php:145:        Schema::drop($tableNames['role_has_permissions']);
+database/migrations/2024_02_21_190705_create_permission_tables.php:146:        Schema::drop($tableNames['model_has_roles']);
+database/migrations/2024_02_21_190705_create_permission_tables.php:147:        Schema::drop($tableNames['model_has_permissions']);
+database/migrations/2024_02_21_190705_create_permission_tables.php:148:        Schema::drop($tableNames['roles']);
+database/migrations/2024_02_21_190705_create_permission_tables.php:149:        Schema::drop($tableNames['permissions']);
+database/migrations/2024_02_24_000000_create_reminder_settings_table.php:13:        Schema::create('reminder_settings', function (Blueprint $table): void {
+database/migrations/2024_02_24_000000_create_reminder_settings_table.php:25:        Schema::dropIfExists('reminder_settings');
+database/migrations/2024_05_20_000001_update_contacts_table.php:13:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2024_05_20_000001_update_contacts_table.php:21:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2024_06_01_000000_add_calendar_fields_to_tasks_table.php:13:        Schema::table('tasks', function (Blueprint $table): void {});
+database/migrations/2024_06_01_000000_add_calendar_fields_to_tasks_table.php:18:        Schema::table('tasks', function (Blueprint $table): void {
+database/migrations/2024_07_24_080000_create_menus_table.php:11:        Schema::create('menus', function (Blueprint $table): void {
+database/migrations/2024_07_24_080000_create_menus_table.php:26:        Schema::dropIfExists('menus');
+database/migrations/2024_09_29_093707_add_team_to_resources.php:21:            if (! Schema::hasColumn($table, 'team_id')) {
+database/migrations/2024_09_29_093707_add_team_to_resources.php:22:                Schema::table($table, function (Blueprint $table): void {
+database/migrations/2024_09_29_093707_add_team_to_resources.php:37:            if (Schema::hasColumn($table, 'team_id')) {
+database/migrations/2024_09_29_093707_add_team_to_resources.php:38:                Schema::table($table, function (Blueprint $table): void {
+database/migrations/2024_10_13_000000_add_pipeline_and_stage_to_deals_table.php:13:        if (! Schema::hasTable('deals')) {
+database/migrations/2024_10_13_000000_add_pipeline_and_stage_to_deals_table.php:14:            Schema::create('deals', function (Blueprint $table): void {
+database/migrations/2024_10_13_000000_add_pipeline_and_stage_to_deals_table.php:27:        Schema::table('deals', function (Blueprint $table): void {
+database/migrations/2024_10_13_000000_add_pipeline_and_stage_to_deals_table.php:35:        Schema::table('deals', function (Blueprint $table): void {
+database/migrations/2024_10_13_000000_create_accounting_integrations_table.php:13:        Schema::create('accounting_integrations', function (Blueprint $table): void {
+database/migrations/2024_10_13_000000_create_accounting_integrations_table.php:25:        Schema::dropIfExists('accounting_integrations');
+database/migrations/2024_10_13_020000_create_audit_logs_table.php:11:        Schema::create('audit_logs', function (Blueprint $table): void {
+database/migrations/2024_10_13_020000_create_audit_logs_table.php:23:        Schema::dropIfExists('audit_logs');
+database/migrations/2024_10_13_030000_create_knowledge_base_articles_table.php:13:        Schema::create('knowledge_base_articles', function (Blueprint $table): void {
+database/migrations/2024_10_13_030000_create_knowledge_base_articles_table.php:24:        Schema::dropIfExists('knowledge_base_articles');
+database/migrations/2024_10_13_040000_create_quote_requests_table.php:13:        Schema::create('quote_requests', function (Blueprint $table): void {
+database/migrations/2024_10_13_040000_create_quote_requests_table.php:24:        Schema::dropIfExists('quote_requests');
+database/migrations/2024_10_20_000000_enhance_crm_tables.php:11:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2024_10_20_000000_enhance_crm_tables.php:21:        Schema::create('leads', function (Blueprint $table) {
+database/migrations/2024_10_20_000000_enhance_crm_tables.php:32:        Schema::create('activities', function (Blueprint $table): void {
+database/migrations/2024_10_20_000000_enhance_crm_tables.php:45:        Schema::dropIfExists('activities');
+database/migrations/2024_10_20_000000_enhance_crm_tables.php:46:        Schema::dropIfExists('deals');
+database/migrations/2024_10_20_000000_enhance_crm_tables.php:47:        Schema::dropIfExists('leads');
+database/migrations/2024_10_20_000000_enhance_crm_tables.php:48:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2024_10_22_000000_create_advertising_accounts_table.php:11:        Schema::create('advertising_accounts', function (Blueprint $table): void {
+database/migrations/2024_10_22_000000_create_advertising_accounts_table.php:14:            $table->enum('platform', ['Google AdWords', 'LinkedIn Business', 'Facebook Advertising']);
+database/migrations/2024_10_22_000000_create_advertising_accounts_table.php:25:        Schema::dropIfExists('advertising_accounts');
+database/migrations/2024_10_22_000000_create_dashboard_widgets_table.php:11:        Schema::create('dashboard_widgets', function (Blueprint $table): void {
+database/migrations/2024_10_22_000000_create_dashboard_widgets_table.php:23:        Schema::dropIfExists('dashboard_widgets');
+database/migrations/2024_10_22_000000_create_form_builders_table.php:11:        Schema::create('form_builders', function (Blueprint $table): void {
+database/migrations/2024_10_22_000000_create_form_builders_table.php:23:        Schema::dropIfExists('form_builders');
+database/migrations/2024_10_22_000000_create_tickets_table.php:11:        Schema::create('tickets', function (Blueprint $table): void {
+database/migrations/2024_10_22_000000_create_tickets_table.php:25:        Schema::dropIfExists('tickets');
+database/migrations/2024_10_22_000000_create_whatsapp_numbers_table.php:11:        Schema::create('whats_app_numbers', function (Blueprint $table): void {
+database/migrations/2024_10_22_000000_create_whatsapp_numbers_table.php:22:        Schema::dropIfExists('whats_app_numbers');
+database/migrations/2024_10_22_100000_add_last_sync_and_metadata_to_advertising_accounts_table.php:11:        Schema::table('advertising_accounts', function (Blueprint $table): void {
+database/migrations/2024_10_22_100000_add_last_sync_and_metadata_to_advertising_accounts_table.php:12:            if (! Schema::hasColumn('advertising_accounts', 'team_id')) {
+database/migrations/2024_10_22_100000_add_last_sync_and_metadata_to_advertising_accounts_table.php:22:        Schema::table('advertising_accounts', function (Blueprint $table): void {
+database/migrations/2024_10_22_100000_add_last_sync_and_metadata_to_advertising_accounts_table.php:24:            if (Schema::hasColumn('advertising_accounts', 'team_id')) {
+database/migrations/2024_10_22_110000_create_campaigns_table.php:11:        Schema::create('campaigns', function (Blueprint $table): void {
+database/migrations/2024_10_22_110000_create_campaigns_table.php:17:            $table->enum('status', ['active', 'paused', 'archived', 'deleted'])->default('active');
+database/migrations/2024_10_22_110000_create_campaigns_table.php:18:            $table->enum('objective', ['awareness', 'consideration', 'conversion'])->nullable();
+database/migrations/2024_10_22_110000_create_campaigns_table.php:20:            $table->enum('budget_type', ['daily', 'lifetime'])->default('daily');
+database/migrations/2024_10_22_110000_create_campaigns_table.php:30:        Schema::dropIfExists('campaigns');
+database/migrations/2024_10_22_120000_create_ad_sets_table.php:11:        Schema::create('ad_sets', function (Blueprint $table): void {
+database/migrations/2024_10_22_120000_create_ad_sets_table.php:18:            $table->enum('status', ['active', 'paused', 'archived', 'deleted'])->default('active');
+database/migrations/2024_10_22_120000_create_ad_sets_table.php:20:            $table->enum('budget_type', ['daily', 'lifetime'])->default('daily');
+database/migrations/2024_10_22_120000_create_ad_sets_table.php:29:        Schema::dropIfExists('ad_sets');
+database/migrations/2024_10_22_130000_create_ads_table.php:11:        Schema::create('ads', function (Blueprint $table): void {
+database/migrations/2024_10_22_130000_create_ads_table.php:19:            $table->enum('status', ['active', 'paused', 'archived', 'deleted'])->default('active');
+database/migrations/2024_10_22_130000_create_ads_table.php:31:        Schema::dropIfExists('ads');
+database/migrations/2024_10_23_000000_create_facebook_messenger_messages_table.php:13:        Schema::create('facebook_messenger_messages', function (Blueprint $table): void {
+database/migrations/2024_10_23_000000_create_facebook_messenger_messages_table.php:28:        Schema::dropIfExists('facebook_messenger_messages');
+database/migrations/2024_1116_000000_create_documents_table.php:11:        Schema::create('documents', function (Blueprint $table): void {
+database/migrations/2024_1116_000000_create_documents_table.php:22:        Schema::dropIfExists('documents');
+database/migrations/2024_11_17_000000_add_team_id_to-staff_resource_tables.php:17:            if (! Schema::hasColumn($table, 'team_id')) {
+database/migrations/2024_11_17_000000_add_team_id_to-staff_resource_tables.php:18:                Schema::table($table, function (Blueprint $table): void {
+database/migrations/2024_11_17_000000_add_team_id_to-staff_resource_tables.php:34:            if (Schema::hasColumn($table, 'team_id')) {
+database/migrations/2024_11_17_000000_add_team_id_to-staff_resource_tables.php:35:                Schema::table($table, function (Blueprint $table): void {
+database/migrations/2024_11_20_000000_add_media_fields_to_social_media_posts_table.php:11:        Schema::table('social_media_posts', function (Blueprint $table): void {
+database/migrations/2024_11_20_000000_add_media_fields_to_social_media_posts_table.php:21:        Schema::table('social_media_posts', function (Blueprint $table): void {
+database/migrations/2025_01_27_173821_create_message_table.php:14:        Schema::create('messages', function (Blueprint $table): void {
+database/migrations/2025_01_27_173821_create_message_table.php:34:        Schema::dropIfExists('message');
+database/migrations/2025_11_20_111132_create_notifications_table.php:14:        Schema::create('notifications', function (Blueprint $table): void {
+database/migrations/2025_11_20_111132_create_notifications_table.php:29:        Schema::dropIfExists('notifications');
+database/migrations/2025_11_20_112532_add_team_to_messages.php:20:            if (! Schema::hasColumn($table, 'team_id')) {
+database/migrations/2025_11_20_112532_add_team_to_messages.php:21:                Schema::table($table, function (Blueprint $table): void {
+database/migrations/2025_11_20_112532_add_team_to_messages.php:34:            if (Schema::hasColumn($table, 'team_id')) {
+database/migrations/2025_11_20_112532_add_team_to_messages.php:35:                Schema::table($table, function (Blueprint $table): void {
+database/migrations/2026_02_16_000000_add_fields_to_oauth_configurations_table.php:14:        Schema::table('oauth_configurations', function (Blueprint $table): void {
+database/migrations/2026_02_16_000000_add_fields_to_oauth_configurations_table.php:15:            if (! Schema::hasColumn('oauth_configurations', 'is_active')) {
+database/migrations/2026_02_16_000000_add_fields_to_oauth_configurations_table.php:18:            if (! Schema::hasColumn('oauth_configurations', 'account_name')) {
+database/migrations/2026_02_16_000000_add_fields_to_oauth_configurations_table.php:29:        Schema::table('oauth_configurations', function (Blueprint $table): void {
+database/migrations/2026_02_16_000000_add_fields_to_oauth_configurations_table.php:30:            if (Schema::hasColumn('oauth_configurations', 'is_active')) {
+database/migrations/2026_02_16_000000_add_fields_to_oauth_configurations_table.php:33:            if (Schema::hasColumn('oauth_configurations', 'account_name')) {
+database/migrations/2026_03_03_000000_add_company_id_and_custom_fields_to_contacts_table.php:11:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_03_03_000000_add_company_id_and_custom_fields_to_contacts_table.php:12:            if (! Schema::hasColumn('contacts', 'company_id')) {
+database/migrations/2026_03_03_000000_add_company_id_and_custom_fields_to_contacts_table.php:15:            if (! Schema::hasColumn('contacts', 'custom_fields')) {
+database/migrations/2026_03_03_000000_add_company_id_and_custom_fields_to_contacts_table.php:23:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_03_03_000000_add_company_id_and_custom_fields_to_contacts_table.php:24:            if (Schema::hasColumn('contacts', 'company_id')) {
+database/migrations/2026_03_03_000000_add_company_id_and_custom_fields_to_contacts_table.php:28:            if (Schema::hasColumn('contacts', 'custom_fields')) {
+database/migrations/2026_03_03_000000_add_media_fields_to_social_media_posts_table.php:14:        Schema::table('social_media_posts', function (Blueprint $table): void {
+database/migrations/2026_03_03_000000_add_media_fields_to_social_media_posts_table.php:15:            if (! Schema::hasColumn('social_media_posts', 'link')) {
+database/migrations/2026_03_03_000000_add_media_fields_to_social_media_posts_table.php:18:            if (! Schema::hasColumn('social_media_posts', 'image_path')) {
+database/migrations/2026_03_03_000000_add_media_fields_to_social_media_posts_table.php:21:            if (! Schema::hasColumn('social_media_posts', 'video_url')) {
+database/migrations/2026_03_03_000000_add_media_fields_to_social_media_posts_table.php:32:        Schema::table('social_media_posts', function (Blueprint $table): void {
+database/migrations/2026_03_03_000000_add_media_fields_to_social_media_posts_table.php:35:                if (Schema::hasColumn('social_media_posts', $col)) {
+database/migrations/2026_03_03_000001_add_source_fields_to_tickets_table.php:11:        Schema::table('tickets', function (Blueprint $table): void {
+database/migrations/2026_03_03_000001_add_source_fields_to_tickets_table.php:20:        Schema::table('tickets', function (Blueprint $table): void {
+database/migrations/2026_03_03_000002_add_ticket_id_to_messages_table.php:11:        Schema::table('messages', function (Blueprint $table): void {
+database/migrations/2026_03_03_000002_add_ticket_id_to_messages_table.php:18:        Schema::table('messages', function (Blueprint $table): void {
+database/migrations/2026_03_06_000001_create_webhooks_table.php:11:        Schema::create('webhooks', function (Blueprint $table): void {
+database/migrations/2026_03_06_000001_create_webhooks_table.php:27:        Schema::dropIfExists('webhooks');
+database/migrations/2026_03_06_000002_add_metadata_to_documents_table.php:11:        Schema::table('documents', function (Blueprint $table): void {
+database/migrations/2026_03_06_000002_add_metadata_to_documents_table.php:23:        Schema::table('documents', function (Blueprint $table): void {
+database/migrations/2026_03_06_000003_add_advanced_fields_to_form_builders_table.php:11:        Schema::table('form_builders', function (Blueprint $table): void {
+database/migrations/2026_03_06_000003_add_advanced_fields_to_form_builders_table.php:21:        Schema::table('form_builders', function (Blueprint $table): void {
+database/migrations/2026_03_07_000001_add_missing_columns_to_custom_fields_table.php:11:        Schema::table('custom_fields', function (Blueprint $table): void {
+database/migrations/2026_03_07_000001_add_missing_columns_to_custom_fields_table.php:12:            if (! Schema::hasColumn('custom_fields', 'label')) {
+database/migrations/2026_03_07_000001_add_missing_columns_to_custom_fields_table.php:15:            if (! Schema::hasColumn('custom_fields', 'options')) {
+database/migrations/2026_03_07_000001_add_missing_columns_to_custom_fields_table.php:18:            if (! Schema::hasColumn('custom_fields', 'required')) {
+database/migrations/2026_03_07_000001_add_missing_columns_to_custom_fields_table.php:21:            if (! Schema::hasColumn('custom_fields', 'validation_rules')) {
+database/migrations/2026_03_07_000001_add_missing_columns_to_custom_fields_table.php:24:            if (! Schema::hasColumn('custom_fields', 'order')) {
+database/migrations/2026_03_07_000001_add_missing_columns_to_custom_fields_table.php:32:        Schema::table('custom_fields', function (Blueprint $table): void {
+database/migrations/2026_03_07_000001_add_missing_columns_to_custom_fields_table.php:35:                if (Schema::hasColumn('custom_fields', $column)) {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:11:        Schema::table('documents', function (Blueprint $table): void {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:12:            if (! Schema::hasColumn('documents', 'team_id')) {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:15:            if (! Schema::hasColumn('documents', 'name')) {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:18:            if (! Schema::hasColumn('documents', 'file_name')) {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:21:            if (! Schema::hasColumn('documents', 'file_size')) {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:24:            if (! Schema::hasColumn('documents', 'type')) {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:27:            if (! Schema::hasColumn('documents', 'status')) {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:35:        Schema::table('documents', function (Blueprint $table): void {
+database/migrations/2026_03_07_000002_add_missing_columns_to_documents_table.php:38:                if (Schema::hasColumn('documents', $column)) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:11:        Schema::table('lead_forms', function (Blueprint $table): void {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:12:            if (! Schema::hasColumn('lead_forms', 'team_id')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:15:            if (! Schema::hasColumn('lead_forms', 'description')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:18:            if (! Schema::hasColumn('lead_forms', 'settings')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:21:            if (! Schema::hasColumn('lead_forms', 'style')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:24:            if (! Schema::hasColumn('lead_forms', 'status')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:27:            if (! Schema::hasColumn('lead_forms', 'conversion_rate')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:30:            if (! Schema::hasColumn('lead_forms', 'views')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:33:            if (! Schema::hasColumn('lead_forms', 'submissions')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:37:            if (Schema::hasColumn('lead_forms', 'landing_page_id')) {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:45:        Schema::table('lead_forms', function (Blueprint $table): void {
+database/migrations/2026_03_07_000003_add_missing_columns_to_lead_forms_table.php:48:                if (Schema::hasColumn('lead_forms', $column)) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:12:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:13:            if (Schema::hasColumn('contacts', 'last_name')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:16:            if (Schema::hasColumn('contacts', 'phone_number')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:22:        Schema::table('oauth_configurations', function (Blueprint $table): void {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:23:            if (! Schema::hasColumn('oauth_configurations', 'user_id')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:26:            if (Schema::hasColumn('oauth_configurations', 'client_id')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:29:            if (Schema::hasColumn('oauth_configurations', 'client_secret')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:37:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:38:            if (Schema::hasColumn('contacts', 'last_name')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:41:            if (Schema::hasColumn('contacts', 'phone_number')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:46:        Schema::table('oauth_configurations', function (Blueprint $table): void {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:47:            if (Schema::hasColumn('oauth_configurations', 'user_id')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:51:            if (Schema::hasColumn('oauth_configurations', 'client_id')) {
+database/migrations/2026_03_07_000004_fix_nullable_columns.php:54:            if (Schema::hasColumn('oauth_configurations', 'client_secret')) {
+database/migrations/2026_03_08_000001_change_company_size_to_string_in_contacts_table.php:11:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_03_08_000001_change_company_size_to_string_in_contacts_table.php:12:            if (Schema::hasColumn('contacts', 'company_size')) {
+database/migrations/2026_03_08_000001_change_company_size_to_string_in_contacts_table.php:20:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_03_08_000001_change_company_size_to_string_in_contacts_table.php:21:            if (Schema::hasColumn('contacts', 'company_size')) {
+database/migrations/2026_03_08_000002_add_missing_columns_to_landing_pages_table.php:11:        Schema::table('landing_pages', function (Blueprint $table): void {
+database/migrations/2026_03_08_000002_add_missing_columns_to_landing_pages_table.php:12:            if (! Schema::hasColumn('landing_pages', 'name')) {
+database/migrations/2026_03_08_000002_add_missing_columns_to_landing_pages_table.php:15:            if (! Schema::hasColumn('landing_pages', 'slug')) {
+database/migrations/2026_03_08_000002_add_missing_columns_to_landing_pages_table.php:18:            if (! Schema::hasColumn('landing_pages', 'template')) {
+database/migrations/2026_03_08_000002_add_missing_columns_to_landing_pages_table.php:21:            if (! Schema::hasColumn('landing_pages', 'settings')) {
+database/migrations/2026_03_08_000002_add_missing_columns_to_landing_pages_table.php:29:        Schema::table('landing_pages', function (Blueprint $table): void {
+database/migrations/2026_03_08_000002_add_missing_columns_to_landing_pages_table.php:31:                if (Schema::hasColumn('landing_pages', $column)) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:11:        Schema::table('emails', function (Blueprint $table): void {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:12:            if (! Schema::hasColumn('emails', 'team_id')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:15:            if (! Schema::hasColumn('emails', 'user_id')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:18:            if (! Schema::hasColumn('emails', 'body')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:21:            if (! Schema::hasColumn('emails', 'from')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:24:            if (! Schema::hasColumn('emails', 'to')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:27:            if (! Schema::hasColumn('emails', 'cc')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:30:            if (! Schema::hasColumn('emails', 'bcc')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:33:            if (! Schema::hasColumn('emails', 'status')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:36:            if (! Schema::hasColumn('emails', 'scheduled_at')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:39:            if (! Schema::hasColumn('emails', 'sent_at')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:42:            if (! Schema::hasColumn('emails', 'opened_at')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:45:            if (! Schema::hasColumn('emails', 'clicked_at')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:48:            if (! Schema::hasColumn('emails', 'email_template_id')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:51:            if (! Schema::hasColumn('emails', 'campaign_id')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:54:            if (! Schema::hasColumn('emails', 'metadata')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:58:            if (Schema::hasColumn('emails', 'message_id')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:61:            if (Schema::hasColumn('emails', 'sender')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:64:            if (Schema::hasColumn('emails', 'recipient')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:67:            if (Schema::hasColumn('emails', 'content')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:70:            if (Schema::hasColumn('emails', 'timestamp')) {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:78:        Schema::table('emails', function (Blueprint $table): void {
+database/migrations/2026_03_08_000003_add_missing_columns_to_emails_table.php:85:                if (Schema::hasColumn('emails', $column)) {
+database/migrations/2026_03_08_000004_create_mailchimp_campaigns_table.php:11:        if (! Schema::hasTable('mailchimp_campaigns')) {
+database/migrations/2026_03_08_000004_create_mailchimp_campaigns_table.php:12:            Schema::create('mailchimp_campaigns', function (Blueprint $table): void {
+database/migrations/2026_03_08_000004_create_mailchimp_campaigns_table.php:31:        Schema::dropIfExists('mailchimp_campaigns');
+database/migrations/2026_05_26_161939_add_team_id_to_deals_table.php:14:        if (! Schema::hasColumn('deals', 'team_id')) {
+database/migrations/2026_05_26_161939_add_team_id_to_deals_table.php:15:            Schema::table('deals', function (Blueprint $table): void {
+database/migrations/2026_05_26_161939_add_team_id_to_deals_table.php:26:        if (Schema::hasColumn('deals', 'team_id')) {
+database/migrations/2026_05_26_161939_add_team_id_to_deals_table.php:27:            Schema::table('deals', function (Blueprint $table): void {
+database/migrations/2026_06_02_000001_create_modules_table.php:11:        Schema::create('modules', function (Blueprint $table) {
+database/migrations/2026_06_02_000001_create_modules_table.php:22:        Schema::dropIfExists('modules');
+database/migrations/2026_07_06_000000_make_tickets_email_id_nullable.php:11:        $column = collect(Schema::getColumns('tickets'))->firstWhere('name', 'email_id');
+database/migrations/2026_07_06_000000_make_tickets_email_id_nullable.php:14:        // The unique index is left untouched: both sqlite and MySQL permit
+database/migrations/2026_07_06_000000_make_tickets_email_id_nullable.php:17:            Schema::table('tickets', function (Blueprint $table): void {
+database/migrations/2026_07_06_000001_add_team_id_to_tenant_scoped_tables.php:46:            if (! Schema::hasTable($table) || Schema::hasColumn($table, 'team_id')) {
+database/migrations/2026_07_06_000001_add_team_id_to_tenant_scoped_tables.php:50:            Schema::table($table, function (Blueprint $t) {
+database/migrations/2026_07_06_000001_add_team_id_to_tenant_scoped_tables.php:59:            if (! Schema::hasTable($table) || ! Schema::hasColumn($table, 'team_id')) {
+database/migrations/2026_07_06_000001_add_team_id_to_tenant_scoped_tables.php:63:            Schema::table($table, function (Blueprint $t) {
+database/migrations/2026_07_06_000002_enable_spatie_teams_columns.php:13: * (teams => true), so every block here is a no-op — guarded by Schema::hasColumn.
+database/migrations/2026_07_06_000002_enable_spatie_teams_columns.php:34:        if (Schema::hasTable($names['roles']) && ! Schema::hasColumn($names['roles'], $teamKey)) {
+database/migrations/2026_07_06_000002_enable_spatie_teams_columns.php:35:            Schema::table($names['roles'], function (Blueprint $table) use ($teamKey): void {
+database/migrations/2026_07_06_000002_enable_spatie_teams_columns.php:45:        if (Schema::hasTable($names['model_has_roles']) && ! Schema::hasColumn($names['model_has_roles'], $teamKey)) {
+database/migrations/2026_07_06_000002_enable_spatie_teams_columns.php:56:        if (Schema::hasTable($names['model_has_permissions']) && ! Schema::hasColumn($names['model_has_permissions'], $teamKey)) {
+database/migrations/2026_07_06_000002_enable_spatie_teams_columns.php:81:        Schema::table($table, function (Blueprint $t) use ($teamKey, $indexName, $unique, $uniqueName): void {
+database/migrations/2026_07_06_000002_enable_spatie_teams_columns.php:91:        Schema::table($table, function (Blueprint $t) use ($old, $new): void {
+database/migrations/2026_07_06_120000_create_call_logs_table.php:11:        Schema::create('call_logs', function (Blueprint $table): void {
+database/migrations/2026_07_06_120000_create_call_logs_table.php:25:        Schema::dropIfExists('call_logs');
+database/migrations/2026_07_06_130000_add_auditable_columns_to_audit_logs.php:17:        Schema::table('audit_logs', function (Blueprint $table): void {
+database/migrations/2026_07_06_130000_add_auditable_columns_to_audit_logs.php:24:            if (! Schema::hasColumn('audit_logs', 'team_id')) {
+database/migrations/2026_07_06_130000_add_auditable_columns_to_audit_logs.php:32:        Schema::table('audit_logs', function (Blueprint $table): void {
+database/migrations/2026_07_06_140000_create_tags_table.php:11:        Schema::create('tags', function (Blueprint $table): void {
+database/migrations/2026_07_06_140000_create_tags_table.php:18:        Schema::create('taggables', function (Blueprint $table): void {
+database/migrations/2026_07_06_140000_create_tags_table.php:28:        Schema::dropIfExists('taggables');
+database/migrations/2026_07_06_140000_create_tags_table.php:29:        Schema::dropIfExists('tags');
+database/migrations/2026_07_06_150000_create_chat_messages_table.php:16:        Schema::create('chat_messages', function (Blueprint $table) {
+database/migrations/2026_07_06_150000_create_chat_messages_table.php:29:        Schema::dropIfExists('chat_messages');
+database/migrations/2026_07_06_160000_add_annual_revenue_to_companies_table.php:15:        if (Schema::hasColumn('companies', 'annual_revenue')) {
+database/migrations/2026_07_06_160000_add_annual_revenue_to_companies_table.php:19:        Schema::table('companies', function (Blueprint $table) {
+database/migrations/2026_07_06_160000_add_annual_revenue_to_companies_table.php:26:        if (! Schema::hasColumn('companies', 'annual_revenue')) {
+database/migrations/2026_07_06_160000_add_annual_revenue_to_companies_table.php:30:        Schema::table('companies', function (Blueprint $table) {
+database/migrations/2026_07_06_170000_add_notes_to_call_logs_table.php:15:        if (Schema::hasColumn('call_logs', 'notes')) {
+database/migrations/2026_07_06_170000_add_notes_to_call_logs_table.php:19:        Schema::table('call_logs', function (Blueprint $table) {
+database/migrations/2026_07_06_170000_add_notes_to_call_logs_table.php:26:        if (! Schema::hasColumn('call_logs', 'notes')) {
+database/migrations/2026_07_06_170000_add_notes_to_call_logs_table.php:30:        Schema::table('call_logs', function (Blueprint $table) {
+database/migrations/2026_07_06_180000_add_overdue_notified_to_tasks_table.php:15:        if (Schema::hasColumn('tasks', 'overdue_notified')) {
+database/migrations/2026_07_06_180000_add_overdue_notified_to_tasks_table.php:19:        Schema::table('tasks', function (Blueprint $table) {
+database/migrations/2026_07_06_180000_add_overdue_notified_to_tasks_table.php:26:        if (! Schema::hasColumn('tasks', 'overdue_notified')) {
+database/migrations/2026_07_06_180000_add_overdue_notified_to_tasks_table.php:30:        Schema::table('tasks', function (Blueprint $table) {
+database/migrations/2026_07_06_190000_add_archived_at_to_teams_table.php:15:        if (Schema::hasColumn('teams', 'archived_at')) {
+database/migrations/2026_07_06_190000_add_archived_at_to_teams_table.php:19:        Schema::table('teams', function (Blueprint $table) {
+database/migrations/2026_07_06_190000_add_archived_at_to_teams_table.php:26:        if (! Schema::hasColumn('teams', 'archived_at')) {
+database/migrations/2026_07_06_190000_add_archived_at_to_teams_table.php:30:        Schema::table('teams', function (Blueprint $table) {
+database/migrations/2026_07_06_200000_create_team_backups_table.php:15:        if (Schema::hasTable('team_backups')) {
+database/migrations/2026_07_06_200000_create_team_backups_table.php:19:        Schema::create('team_backups', function (Blueprint $table) {
+database/migrations/2026_07_06_200000_create_team_backups_table.php:34:        Schema::dropIfExists('team_backups');
+database/migrations/2026_07_07_120000_add_team_id_to_tickets_table.php:18:        if (Schema::hasColumn('tickets', 'team_id')) {
+database/migrations/2026_07_07_120000_add_team_id_to_tickets_table.php:22:        Schema::table('tickets', function (Blueprint $table): void {
+database/migrations/2026_07_07_120000_add_team_id_to_tickets_table.php:34:        if (! Schema::hasColumn('tickets', 'team_id')) {
+database/migrations/2026_07_07_120000_add_team_id_to_tickets_table.php:38:        Schema::table('tickets', function (Blueprint $table): void {
+database/migrations/2026_07_07_130000_add_attachment_to_tickets_table.php:11:        if (Schema::hasColumn('tickets', 'attachment')) {
+database/migrations/2026_07_07_130000_add_attachment_to_tickets_table.php:15:        Schema::table('tickets', function (Blueprint $table): void {
+database/migrations/2026_07_07_130000_add_attachment_to_tickets_table.php:23:        if (! Schema::hasColumn('tickets', 'attachment')) {
+database/migrations/2026_07_07_130000_add_attachment_to_tickets_table.php:27:        Schema::table('tickets', function (Blueprint $table): void {
+database/migrations/2026_07_07_140000_add_portal_fields_to_knowledge_base_articles_table.php:11:        Schema::table('knowledge_base_articles', function (Blueprint $table): void {
+database/migrations/2026_07_07_140000_add_portal_fields_to_knowledge_base_articles_table.php:12:            if (! Schema::hasColumn('knowledge_base_articles', 'is_published')) {
+database/migrations/2026_07_07_140000_add_portal_fields_to_knowledge_base_articles_table.php:17:            if (! Schema::hasColumn('knowledge_base_articles', 'helpful_count')) {
+database/migrations/2026_07_07_140000_add_portal_fields_to_knowledge_base_articles_table.php:20:            if (! Schema::hasColumn('knowledge_base_articles', 'not_helpful_count')) {
+database/migrations/2026_07_07_140000_add_portal_fields_to_knowledge_base_articles_table.php:28:        Schema::table('knowledge_base_articles', function (Blueprint $table): void {
+database/migrations/2026_07_07_140000_add_portal_fields_to_knowledge_base_articles_table.php:30:                if (Schema::hasColumn('knowledge_base_articles', $column)) {
+database/migrations/2026_07_08_000000_create_sso_connections_table.php:11:        if (Schema::hasTable('sso_connections')) {
+database/migrations/2026_07_08_000000_create_sso_connections_table.php:15:        Schema::create('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_000000_create_sso_connections_table.php:31:        Schema::dropIfExists('sso_connections');
+database/migrations/2026_07_08_000001_encrypt_oauth_configuration_client_secret.php:19:        Schema::table('oauth_configurations', function (Blueprint $table): void {
+database/migrations/2026_07_08_000001_encrypt_oauth_configuration_client_secret.php:26:        Schema::table('oauth_configurations', function (Blueprint $table): void {
+database/migrations/2026_07_08_000002_encrypt_webhook_secret.php:13:        Schema::table('webhooks', function (Blueprint $table): void {
+database/migrations/2026_07_08_000002_encrypt_webhook_secret.php:20:        Schema::table('webhooks', function (Blueprint $table): void {
+database/migrations/2026_07_08_000003_encrypt_connected_account_tokens.php:17:        Schema::table('connected_accounts', function (Blueprint $table): void {
+database/migrations/2026_07_08_000003_encrypt_connected_account_tokens.php:29:        Schema::table('connected_accounts', function (Blueprint $table): void {
+database/migrations/2026_07_08_000004_create_exports_table.php:19:        Schema::create('exports', function (Blueprint $table): void {
+database/migrations/2026_07_08_000004_create_exports_table.php:35:        Schema::dropIfExists('exports');
+database/migrations/2026_07_08_000005_create_webhook_deliveries_table.php:19:        Schema::create('webhook_deliveries', function (Blueprint $table): void {
+database/migrations/2026_07_08_000005_create_webhook_deliveries_table.php:33:        Schema::dropIfExists('webhook_deliveries');
+database/migrations/2026_07_08_010000_add_jit_to_sso_connections_table.php:11:        Schema::table('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_010000_add_jit_to_sso_connections_table.php:12:            if (! Schema::hasColumn('sso_connections', 'allow_jit')) {
+database/migrations/2026_07_08_010000_add_jit_to_sso_connections_table.php:15:            if (! Schema::hasColumn('sso_connections', 'allowed_domain')) {
+database/migrations/2026_07_08_010000_add_jit_to_sso_connections_table.php:23:        Schema::table('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_020000_add_require_sso_to_sso_connections_table.php:11:        Schema::table('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_020000_add_require_sso_to_sso_connections_table.php:12:            if (! Schema::hasColumn('sso_connections', 'require_sso')) {
+database/migrations/2026_07_08_020000_add_require_sso_to_sso_connections_table.php:20:        Schema::table('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_030000_create_territories_table.php:11:        if (Schema::hasTable('territories')) {
+database/migrations/2026_07_08_030000_create_territories_table.php:15:        Schema::create('territories', function (Blueprint $table): void {
+database/migrations/2026_07_08_030000_create_territories_table.php:25:        Schema::dropIfExists('territories');
+database/migrations/2026_07_08_030001_create_territory_user_table.php:11:        if (Schema::hasTable('territory_user')) {
+database/migrations/2026_07_08_030001_create_territory_user_table.php:15:        Schema::create('territory_user', function (Blueprint $table): void {
+database/migrations/2026_07_08_030001_create_territory_user_table.php:26:        Schema::dropIfExists('territory_user');
+database/migrations/2026_07_08_040000_add_territory_id_to_contacts_table.php:11:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_07_08_040000_add_territory_id_to_contacts_table.php:12:            if (! Schema::hasColumn('contacts', 'territory_id')) {
+database/migrations/2026_07_08_040000_add_territory_id_to_contacts_table.php:20:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_07_08_050000_add_token_auth_method_to_sso_connections_table.php:11:        Schema::table('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_050000_add_token_auth_method_to_sso_connections_table.php:12:            if (! Schema::hasColumn('sso_connections', 'token_auth_method')) {
+database/migrations/2026_07_08_050000_add_token_auth_method_to_sso_connections_table.php:20:        Schema::table('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_060000_add_role_mappings_to_sso_connections_table.php:11:        Schema::table('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_060000_add_role_mappings_to_sso_connections_table.php:12:            if (! Schema::hasColumn('sso_connections', 'role_mappings')) {
+database/migrations/2026_07_08_060000_add_role_mappings_to_sso_connections_table.php:20:        Schema::table('sso_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_070000_create_kb_article_votes_table.php:11:        if (Schema::hasTable('kb_article_votes')) {
+database/migrations/2026_07_08_070000_create_kb_article_votes_table.php:15:        Schema::create('kb_article_votes', function (Blueprint $table): void {
+database/migrations/2026_07_08_070000_create_kb_article_votes_table.php:28:        Schema::dropIfExists('kb_article_votes');
+database/migrations/2026_07_08_080000_add_portal_branding_to_teams_table.php:11:        Schema::table('teams', function (Blueprint $table): void {
+database/migrations/2026_07_08_080000_add_portal_branding_to_teams_table.php:12:            if (! Schema::hasColumn('teams', 'portal_brand_name')) {
+database/migrations/2026_07_08_080000_add_portal_branding_to_teams_table.php:15:            if (! Schema::hasColumn('teams', 'portal_logo_url')) {
+database/migrations/2026_07_08_080000_add_portal_branding_to_teams_table.php:23:        Schema::table('teams', function (Blueprint $table): void {
+database/migrations/2026_07_08_090000_create_saml_connections_table.php:11:        if (Schema::hasTable('saml_connections')) {
+database/migrations/2026_07_08_090000_create_saml_connections_table.php:15:        Schema::create('saml_connections', function (Blueprint $table): void {
+database/migrations/2026_07_08_090000_create_saml_connections_table.php:29:        Schema::dropIfExists('saml_connections');
+database/migrations/2026_07_08_100000_add_portal_logo_path_to_teams_table.php:11:        Schema::table('teams', function (Blueprint $table): void {
+database/migrations/2026_07_08_100000_add_portal_logo_path_to_teams_table.php:12:            if (! Schema::hasColumn('teams', 'portal_logo_path')) {
+database/migrations/2026_07_08_100000_add_portal_logo_path_to_teams_table.php:20:        Schema::table('teams', function (Blueprint $table): void {
+database/migrations/2026_07_10_020000_add_jit_to_saml_connections_table.php:17:        Schema::table('saml_connections', function (Blueprint $table): void {
+database/migrations/2026_07_10_020000_add_jit_to_saml_connections_table.php:27:        Schema::table('saml_connections', function (Blueprint $table): void {
+database/migrations/2026_07_10_030000_add_slo_url_to_saml_connections_table.php:17:        Schema::table('saml_connections', function (Blueprint $table): void {
+database/migrations/2026_07_10_030000_add_slo_url_to_saml_connections_table.php:24:        Schema::table('saml_connections', function (Blueprint $table): void {
+database/migrations/2026_07_10_040000_encrypt_contact_email.php:23:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_07_10_040000_encrypt_contact_email.php:28:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_07_10_040000_encrypt_contact_email.php:41:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_07_10_040000_encrypt_contact_email.php:49:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_07_10_050000_encrypt_phone_numbers.php:19:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_07_10_050000_encrypt_phone_numbers.php:24:        Schema::table('companies', function (Blueprint $table): void {
+database/migrations/2026_08_24_000000_create_activity_log_table.php:11:        if (Schema::hasTable('activity_log')) {
+database/migrations/2026_08_24_000000_create_activity_log_table.php:15:        Schema::create('activity_log', function (Blueprint $table): void {
+database/migrations/2026_08_24_010000_scope_contact_email_uniqueness_to_team.php:13:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_08_24_010000_scope_contact_email_uniqueness_to_team.php:21:        Schema::table('contacts', function (Blueprint $table): void {
+database/migrations/2026_08_24_020000_scope_company_domain_uniqueness_to_team.php:13:        Schema::table('companies', function (Blueprint $table): void {
+database/migrations/2026_08_24_020000_scope_company_domain_uniqueness_to_team.php:21:        Schema::table('companies', function (Blueprint $table): void {
+database/migrations/2026_08_24_030000_add_completed_at_to_tasks_table.php:13:        Schema::table('tasks', function (Blueprint $table): void {
+database/migrations/2026_08_24_030000_add_completed_at_to_tasks_table.php:20:        Schema::table('tasks', function (Blueprint $table): void {
+database/migrations/2026_08_24_040000_add_recurrence_to_tasks_table.php:11:        Schema::table('tasks', function (Blueprint $table): void {
+database/migrations/2026_08_24_040000_add_recurrence_to_tasks_table.php:18:        Schema::table('tasks', function (Blueprint $table): void {
+database/migrations/2026_08_24_050000_make_legacy_invitation_token_nullable.php:11:        if (! Schema::hasColumn('team_invitations', 'token')) {
+database/migrations/2026_08_24_050000_make_legacy_invitation_token_nullable.php:15:        Schema::table('team_invitations', function (Blueprint $table): void {
+database/migrations/2026_08_24_050000_make_legacy_invitation_token_nullable.php:22:        if (! Schema::hasColumn('team_invitations', 'token')) {
+database/migrations/2026_08_24_050000_make_legacy_invitation_token_nullable.php:26:        Schema::table('team_invitations', function (Blueprint $table): void {
+database/migrations/2026_08_25_000001_add_zernio_profile_id_to_teams.php:13:        if (Schema::hasColumn('teams', 'zernio_profile_id')) {
+database/migrations/2026_08_25_000001_add_zernio_profile_id_to_teams.php:17:        Schema::table('teams', function (Blueprint $table): void {
+database/migrations/2026_08_25_000001_add_zernio_profile_id_to_teams.php:24:        if (! Schema::hasColumn('teams', 'zernio_profile_id')) {
+database/migrations/2026_08_25_000001_add_zernio_profile_id_to_teams.php:28:        Schema::table('teams', function (Blueprint $table): void {
+modules/activity-comments/database/migrations/2026_08_01_050100_create_activity_comment_tables.php:11:        Schema::create('timeline_activities', function (Blueprint $t): void {
+modules/activity-comments/database/migrations/2026_08_01_050100_create_activity_comment_tables.php:22:        Schema::create('internal_comments', function (Blueprint $t): void {
+modules/activity-comments/database/migrations/2026_08_01_050100_create_activity_comment_tables.php:33:        Schema::create('activity_subscriptions', function (Blueprint $t): void {
+modules/activity-comments/database/migrations/2026_08_01_050100_create_activity_comment_tables.php:45:        Schema::dropIfExists('activity_subscriptions');
+modules/activity-comments/database/migrations/2026_08_01_050100_create_activity_comment_tables.php:46:        Schema::dropIfExists('internal_comments');
+modules/activity-comments/database/migrations/2026_08_01_050100_create_activity_comment_tables.php:47:        Schema::dropIfExists('timeline_activities');
+modules/activity-comments/database/migrations/2026_08_01_065000_create_mentions_and_attachments.php:11:        Schema::create('comment_mentions', function (Blueprint $t): void {
+modules/activity-comments/database/migrations/2026_08_01_065000_create_mentions_and_attachments.php:18:        Schema::create('comment_attachments', function (Blueprint $t): void {
+modules/activity-comments/database/migrations/2026_08_01_065000_create_mentions_and_attachments.php:29:        Schema::dropIfExists('comment_attachments');
+modules/activity-comments/database/migrations/2026_08_01_065000_create_mentions_and_attachments.php:30:        Schema::dropIfExists('comment_mentions');
+modules/analytics-core/database/migrations/2026_08_01_040000_create_analytics_deliveries_table.php:11:        Schema::create('analytics_deliveries', function (Blueprint $t): void {
+modules/analytics-core/database/migrations/2026_08_01_040000_create_analytics_deliveries_table.php:28:        Schema::dropIfExists('analytics_deliveries');
+modules/api-access/database/migrations/2026_06_29_124225_create_personal_access_tokens_table.php:14:        if (Schema::hasTable('personal_access_tokens')) {
+modules/api-access/database/migrations/2026_06_29_124225_create_personal_access_tokens_table.php:18:        Schema::create('personal_access_tokens', function (Blueprint $table) {
+modules/api-access/database/migrations/2026_06_29_124225_create_personal_access_tokens_table.php:35:        Schema::dropIfExists('personal_access_tokens');
+modules/api-access/database/migrations/2026_08_01_020100_create_api_idempotency_keys_table.php:11:        Schema::create('api_idempotency_keys', function (Blueprint $table): void {
+modules/api-access/database/migrations/2026_08_01_020100_create_api_idempotency_keys_table.php:26:        Schema::dropIfExists('api_idempotency_keys');
+modules/api-access/database/migrations/2026_08_01_064200_create_api_service_identities.php:11:        Schema::create('api_service_identities', function (Blueprint $t): void {
+modules/api-access/database/migrations/2026_08_01_064200_create_api_service_identities.php:25:        Schema::dropIfExists('api_service_identities');
+modules/audit/database/migrations/2026_06_29_124053_create_activity_log_table.php:11:        Schema::create('activity_log', function (Blueprint $table) {
+modules/audit/database/migrations/2026_08_01_064100_add_tamper_evidence_to_activity_log.php:11:        Schema::table('activity_log', function (Blueprint $t): void {
+modules/audit/database/migrations/2026_08_01_064100_add_tamper_evidence_to_activity_log.php:22:        Schema::table('activity_log', fn (Blueprint $t) => $t->dropColumn(['previous_hash', 'record_hash', 'tenant_ref', 'correlation_id', 'retain_until']));
+modules/crm-activities/database/migrations/2026_08_24_100000_create_crm_activities_tables.php:13:        Schema::create('crm_activities', function (Blueprint $table): void {
+modules/crm-activities/database/migrations/2026_08_24_100000_create_crm_activities_tables.php:40:        Schema::create('crm_activity_goals', function (Blueprint $table): void {
+modules/crm-activities/database/migrations/2026_08_24_100000_create_crm_activities_tables.php:55:        Schema::create('crm_activity_events', function (Blueprint $table): void {
+modules/crm-activities/database/migrations/2026_08_24_100000_create_crm_activities_tables.php:69:        Schema::dropIfExists('crm_activity_events');
+modules/crm-activities/database/migrations/2026_08_24_100000_create_crm_activities_tables.php:70:        Schema::dropIfExists('crm_activity_goals');
+modules/crm-activities/database/migrations/2026_08_24_100000_create_crm_activities_tables.php:71:        Schema::dropIfExists('crm_activities');
+modules/crm-consent-and-preferences/database/migrations/2026_08_24_090000_create_crm_consent_preferences_tables.php:13:        Schema::create('crm_consent_records', function (Blueprint $table): void {
+modules/crm-consent-and-preferences/database/migrations/2026_08_24_090000_create_crm_consent_preferences_tables.php:31:        Schema::create('crm_preference_records', function (Blueprint $table): void {
+modules/crm-consent-and-preferences/database/migrations/2026_08_24_090000_create_crm_consent_preferences_tables.php:45:        Schema::create('crm_suppression_records', function (Blueprint $table): void {
+modules/crm-consent-and-preferences/database/migrations/2026_08_24_090000_create_crm_consent_preferences_tables.php:60:        Schema::create('crm_policy_evaluations', function (Blueprint $table): void {
+modules/crm-consent-and-preferences/database/migrations/2026_08_24_090000_create_crm_consent_preferences_tables.php:77:        Schema::dropIfExists('crm_policy_evaluations');
+modules/crm-consent-and-preferences/database/migrations/2026_08_24_090000_create_crm_consent_preferences_tables.php:78:        Schema::dropIfExists('crm_suppression_records');
+modules/crm-consent-and-preferences/database/migrations/2026_08_24_090000_create_crm_consent_preferences_tables.php:79:        Schema::dropIfExists('crm_preference_records');
+modules/crm-consent-and-preferences/database/migrations/2026_08_24_090000_create_crm_consent_preferences_tables.php:80:        Schema::dropIfExists('crm_consent_records');
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:13:        Schema::create('crm_core_records', function (Blueprint $table): void {
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:26:        Schema::create('crm_core_tags', function (Blueprint $table): void {
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:35:        Schema::create('crm_core_taggables', function (Blueprint $table): void {
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:41:        Schema::create('crm_core_notes', function (Blueprint $table): void {
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:50:        Schema::create('crm_core_attachments', function (Blueprint $table): void {
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:64:        Schema::create('crm_core_timeline', function (Blueprint $table): void {
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:76:        Schema::create('crm_core_favorites', function (Blueprint $table): void {
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:85:        Schema::create('crm_core_relationships', function (Blueprint $table): void {
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:99:        Schema::dropIfExists('crm_core_relationships');
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:100:        Schema::dropIfExists('crm_core_favorites');
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:101:        Schema::dropIfExists('crm_core_timeline');
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:102:        Schema::dropIfExists('crm_core_attachments');
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:103:        Schema::dropIfExists('crm_core_notes');
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:104:        Schema::dropIfExists('crm_core_taggables');
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:105:        Schema::dropIfExists('crm_core_tags');
+modules/crm-core/database/migrations/2026_08_24_060000_create_crm_core_tables.php:106:        Schema::dropIfExists('crm_core_records');
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:13:        Schema::create('crm_customer_data_objects', function (Blueprint $table): void {
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:25:        Schema::create('crm_customer_data_fields', function (Blueprint $table): void {
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:41:        Schema::create('crm_customer_data_relationships', function (Blueprint $table): void {
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:53:        Schema::create('crm_customer_data_layouts', function (Blueprint $table): void {
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:63:        Schema::create('crm_customer_data_schema_versions', function (Blueprint $table): void {
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:78:        Schema::dropIfExists('crm_customer_data_schema_versions');
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:79:        Schema::dropIfExists('crm_customer_data_layouts');
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:80:        Schema::dropIfExists('crm_customer_data_relationships');
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:81:        Schema::dropIfExists('crm_customer_data_fields');
+modules/crm-customer-data-model/database/migrations/2026_08_24_070000_create_customer_data_model_tables.php:82:        Schema::dropIfExists('crm_customer_data_objects');
+modules/crm-data-operations/database/migrations/2026_08_24_080000_create_crm_data_operations_tables.php:13:        Schema::create('crm_data_operations', function (Blueprint $table): void {
+modules/crm-data-operations/database/migrations/2026_08_24_080000_create_crm_data_operations_tables.php:31:        Schema::create('crm_data_operation_mappings', function (Blueprint $table): void {
+modules/crm-data-operations/database/migrations/2026_08_24_080000_create_crm_data_operations_tables.php:41:        Schema::create('crm_data_operation_rules', function (Blueprint $table): void {
+modules/crm-data-operations/database/migrations/2026_08_24_080000_create_crm_data_operations_tables.php:51:        Schema::create('crm_data_operation_schedules', function (Blueprint $table): void {
+modules/crm-data-operations/database/migrations/2026_08_24_080000_create_crm_data_operations_tables.php:61:        Schema::create('crm_data_operation_exceptions', function (Blueprint $table): void {
+modules/crm-data-operations/database/migrations/2026_08_24_080000_create_crm_data_operations_tables.php:74:        Schema::create('crm_data_operation_duplicates', function (Blueprint $table): void {
+modules/crm-data-operations/database/migrations/2026_08_24_080000_create_crm_data_operations_tables.php:85:        Schema::create('crm_data_operation_audits', function (Blueprint $table): void {
+modules/crm-data-operations/database/migrations/2026_08_24_080000_create_crm_data_operations_tables.php:99:            Schema::dropIfExists($table);
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:13:        Schema::create('crm_lead_captures', function (Blueprint $table): void {
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:38:        Schema::create('crm_lead_capture_forms', function (Blueprint $table): void {
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:52:        Schema::create('crm_lead_capture_qr_codes', function (Blueprint $table): void {
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:65:        Schema::create('crm_lead_capture_referrals', function (Blueprint $table): void {
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:79:        Schema::create('crm_lead_capture_audits', function (Blueprint $table): void {
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:93:        Schema::dropIfExists('crm_lead_capture_audits');
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:94:        Schema::dropIfExists('crm_lead_capture_referrals');
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:95:        Schema::dropIfExists('crm_lead_capture_qr_codes');
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:96:        Schema::dropIfExists('crm_lead_capture_forms');
+modules/crm-lead-capture/database/migrations/2026_08_24_110000_create_crm_lead_capture_tables.php:97:        Schema::dropIfExists('crm_lead_captures');
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:13:        Schema::create('crm_lead_qualification_frameworks', function (Blueprint $table): void {
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:29:        Schema::create('crm_lead_qualifications', function (Blueprint $table): void {
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:51:        Schema::create('crm_lead_qualification_stage_history', function (Blueprint $table): void {
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:63:        Schema::create('crm_lead_qualification_nurtures', function (Blueprint $table): void {
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:77:        Schema::create('crm_lead_qualification_audits', function (Blueprint $table): void {
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:91:        Schema::dropIfExists('crm_lead_qualification_audits');
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:92:        Schema::dropIfExists('crm_lead_qualification_nurtures');
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:93:        Schema::dropIfExists('crm_lead_qualification_stage_history');
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:94:        Schema::dropIfExists('crm_lead_qualifications');
+modules/crm-lead-qualification/database/migrations/2026_08_24_120000_create_crm_lead_qualification_tables.php:95:        Schema::dropIfExists('crm_lead_qualification_frameworks');
+modules/crm-telephony/database/migrations/2026_08_25_080000_create_crm_telephony_tables.php:12:        Schema::create('crm_telephony_numbers', function (Blueprint $table): void {
+modules/crm-telephony/database/migrations/2026_08_25_080000_create_crm_telephony_tables.php:17:        Schema::create('crm_telephony_queues', function (Blueprint $table): void {
+modules/crm-telephony/database/migrations/2026_08_25_080000_create_crm_telephony_tables.php:20:        Schema::create('crm_telephony_settings', function (Blueprint $table): void {
+modules/crm-telephony/database/migrations/2026_08_25_080000_create_crm_telephony_tables.php:23:        Schema::create('crm_telephony_calls', function (Blueprint $table): void {
+modules/crm-telephony/database/migrations/2026_08_25_080000_create_crm_telephony_tables.php:26:        Schema::create('crm_telephony_audits', function (Blueprint $table): void { $table->id(); $table->unsignedBigInteger('team_id'); $table->unsignedBigInteger('actor_id')->nullable(); $table->string('event'); $table->json('details')->nullable(); $table->string('request_id')->nullable(); $table->timestamps(); $table->index(['team_id', 'created_at']); });
+modules/crm-telephony/database/migrations/2026_08_25_080000_create_crm_telephony_tables.php:31:        Schema::dropIfExists('crm_telephony_audits'); Schema::dropIfExists('crm_telephony_calls'); Schema::dropIfExists('crm_telephony_settings'); Schema::dropIfExists('crm_telephony_queues'); Schema::dropIfExists('crm_telephony_numbers');
+modules/crm-templates-and-snapshots/database/migrations/2026_08_25_070000_create_crm_template_snapshot_tables.php:12:        Schema::create('crm_snapshot_bundles', function (Blueprint $t): void {
+modules/crm-templates-and-snapshots/database/migrations/2026_08_25_070000_create_crm_template_snapshot_tables.php:26:        Schema::create('crm_snapshot_installs', function (Blueprint $t): void {
+modules/crm-templates-and-snapshots/database/migrations/2026_08_25_070000_create_crm_template_snapshot_tables.php:36:        Schema::create('crm_snapshot_audits', function (Blueprint $t): void {
+modules/crm-templates-and-snapshots/database/migrations/2026_08_25_070000_create_crm_template_snapshot_tables.php:49:            Schema::dropIfExists($t);
+modules/crm-territories-and-ownership/database/migrations/2026_08_25_060000_create_crm_territory_ownership_tables.php:12:        Schema::create('crm_territory_rules', function (Blueprint $t): void {
+modules/crm-territories-and-ownership/database/migrations/2026_08_25_060000_create_crm_territory_ownership_tables.php:25:        Schema::create('crm_territory_coverage', function (Blueprint $t): void {
+modules/crm-territories-and-ownership/database/migrations/2026_08_25_060000_create_crm_territory_ownership_tables.php:35:        Schema::create('crm_ownership_history', function (Blueprint $t): void {
+modules/crm-territories-and-ownership/database/migrations/2026_08_25_060000_create_crm_territory_ownership_tables.php:51:            Schema::dropIfExists($t);
+modules/crm-unified-conversations/database/migrations/2026_08_25_050000_create_crm_unified_conversations_tables.php:12:        Schema::create('crm_conversations', function (Blueprint $t): void {
+modules/crm-unified-conversations/database/migrations/2026_08_25_050000_create_crm_unified_conversations_tables.php:23:        Schema::create('crm_conversation_participants', function (Blueprint $t): void {
+modules/crm-unified-conversations/database/migrations/2026_08_25_050000_create_crm_unified_conversations_tables.php:33:        Schema::create('crm_conversation_messages', function (Blueprint $t): void {
+modules/crm-unified-conversations/database/migrations/2026_08_25_050000_create_crm_unified_conversations_tables.php:46:        Schema::create('crm_conversation_audits', function (Blueprint $t): void {
+modules/crm-unified-conversations/database/migrations/2026_08_25_050000_create_crm_unified_conversations_tables.php:59:            Schema::dropIfExists($t);
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:12:        Schema::create('crm_usage_wallets', function (Blueprint $table): void {
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:24:        Schema::create('crm_usage_imports', function (Blueprint $table): void {
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:37:        Schema::create('crm_usage_pricing_rules', function (Blueprint $table): void {
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:47:        Schema::create('crm_usage_charges', function (Blueprint $table): void {
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:60:        Schema::create('crm_usage_exceptions', function (Blueprint $table): void {
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:71:        Schema::create('crm_usage_reconciliations', function (Blueprint $table): void {
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:83:        Schema::create('crm_usage_handoffs', function (Blueprint $table): void {
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:94:        Schema::create('crm_usage_audits', function (Blueprint $table): void {
+modules/crm-usage-wallet-and-rebilling/database/migrations/2026_08_25_040000_create_crm_usage_wallet_tables.php:108:            Schema::dropIfExists($table);
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:13:        Schema::create('crm_web_intent_visits', function (Blueprint $table): void {
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:34:        Schema::create('crm_web_intent_engagements', function (Blueprint $table): void {
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:52:        Schema::create('crm_web_intent_identifications', function (Blueprint $table): void {
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:66:        Schema::create('crm_web_intent_signals', function (Blueprint $table): void {
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:79:        Schema::create('crm_web_intent_alerts', function (Blueprint $table): void {
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:95:        Schema::create('crm_web_intent_consents', function (Blueprint $table): void {
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:108:        Schema::create('crm_web_intent_conversions', function (Blueprint $table): void {
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:122:        Schema::create('crm_web_intent_audits', function (Blueprint $table): void {
+modules/crm-web-intent/database/migrations/2026_08_25_030000_create_crm_web_intent_tables.php:136:            Schema::dropIfExists($table);
+modules/crm-white-label/database/migrations/2026_08_25_020000_create_crm_white_label_tables.php:13:        Schema::create('crm_white_label_settings', function (Blueprint $table): void {
+modules/crm-white-label/database/migrations/2026_08_25_020000_create_crm_white_label_tables.php:29:        Schema::create('crm_white_label_audits', function (Blueprint $table): void {
+modules/crm-white-label/database/migrations/2026_08_25_020000_create_crm_white_label_tables.php:42:        Schema::dropIfExists('crm_white_label_audits');
+modules/crm-white-label/database/migrations/2026_08_25_020000_create_crm_white_label_tables.php:43:        Schema::dropIfExists('crm_white_label_settings');
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:13:        Schema::create('crm_work_queues', function (Blueprint $table): void {
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:25:        Schema::create('crm_work_items', function (Blueprint $table): void {
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:46:        Schema::create('crm_work_checklist_items', function (Blueprint $table): void {
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:57:        Schema::create('crm_work_approvals', function (Blueprint $table): void {
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:69:        Schema::create('crm_work_dependencies', function (Blueprint $table): void {
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:78:        Schema::create('crm_work_audits', function (Blueprint $table): void {
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:92:        Schema::dropIfExists('crm_work_audits');
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:93:        Schema::dropIfExists('crm_work_dependencies');
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:94:        Schema::dropIfExists('crm_work_approvals');
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:95:        Schema::dropIfExists('crm_work_checklist_items');
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:96:        Schema::dropIfExists('crm_work_items');
+modules/crm-work-management/database/migrations/2026_08_25_010000_create_crm_work_management_tables.php:97:        Schema::dropIfExists('crm_work_queues');
+modules/currency-context/database/migrations/2026_08_01_063000_create_currency_context_tables.php:11:        Schema::create('currency_preferences', function (Blueprint $t): void {
+modules/currency-context/database/migrations/2026_08_01_063000_create_currency_context_tables.php:19:        Schema::create('exchange_rate_snapshots', function (Blueprint $t): void {
+modules/currency-context/database/migrations/2026_08_01_063000_create_currency_context_tables.php:36:        Schema::dropIfExists('exchange_rate_snapshots');
+modules/currency-context/database/migrations/2026_08_01_063000_create_currency_context_tables.php:37:        Schema::dropIfExists('currency_preferences');
+modules/feature-flags/database/migrations/2026_08_01_020000_create_feature_flags_table.php:11:        Schema::create('feature_flags', function (Blueprint $table): void {
+modules/feature-flags/database/migrations/2026_08_01_020000_create_feature_flags_table.php:24:        Schema::dropIfExists('feature_flags');
+modules/files-media/database/migrations/2026_06_29_124053_create_media_table.php:11:        Schema::create('media', function (Blueprint $table) {
+modules/identity-core/database/migrations/2026_06_29_123953_create_passkeys_table.php:15:        Schema::create('passkeys', function (Blueprint $table) {
+modules/identity-core/database/migrations/2026_06_29_123953_create_passkeys_table.php:33:        Schema::dropIfExists('passkeys');
+modules/identity-socialstream/database/migrations/2026_06_29_123954_make_password_nullable_on_users_table.php:14:        Schema::table('users', function (Blueprint $table) {
+modules/identity-socialstream/database/migrations/2026_06_29_123954_make_password_nullable_on_users_table.php:24:        Schema::table('users', function (Blueprint $table) {
+modules/identity-socialstream/database/migrations/2026_06_29_123955_create_connected_accounts_table.php:14:        if (Schema::hasTable('connected_accounts')) {
+modules/identity-socialstream/database/migrations/2026_06_29_123955_create_connected_accounts_table.php:18:        Schema::create('connected_accounts', function (Blueprint $table) {
+modules/identity-socialstream/database/migrations/2026_06_29_123955_create_connected_accounts_table.php:44:        Schema::dropIfExists('connected_accounts');
+modules/import-export/database/migrations/2026_08_01_050000_create_data_transfers_table.php:11:        Schema::create('data_transfers', function (Blueprint $t): void {
+modules/import-export/database/migrations/2026_08_01_050000_create_data_transfers_table.php:33:        Schema::dropIfExists('data_transfers');
+modules/integrations/database/migrations/2026_08_01_030100_create_integration_connections_table.php:11:        Schema::create('integration_connections', function (Blueprint $t): void {
+modules/integrations/database/migrations/2026_08_01_030100_create_integration_connections_table.php:29:        Schema::dropIfExists('integration_connections');
+modules/notifications/database/migrations/2026_08_01_010000_create_notification_foundation_tables.php:11:        Schema::create('notification_preferences', function (Blueprint $table): void {
+modules/notifications/database/migrations/2026_08_01_010000_create_notification_foundation_tables.php:22:        Schema::create('notification_deliveries', function (Blueprint $table): void {
+modules/notifications/database/migrations/2026_08_01_010000_create_notification_foundation_tables.php:37:        Schema::dropIfExists('notification_deliveries');
+modules/notifications/database/migrations/2026_08_01_010000_create_notification_foundation_tables.php:38:        Schema::dropIfExists('notification_preferences');
+modules/notifications/database/migrations/2026_08_01_064000_create_notification_templates_and_inbox.php:11:        Schema::create('notification_templates', function (Blueprint $t): void {
+modules/notifications/database/migrations/2026_08_01_064000_create_notification_templates_and_inbox.php:22:        Schema::create('notification_inbox', function (Blueprint $t): void {
+modules/notifications/database/migrations/2026_08_01_064000_create_notification_templates_and_inbox.php:35:        Schema::dropIfExists('notification_inbox');
+modules/notifications/database/migrations/2026_08_01_064000_create_notification_templates_and_inbox.php:36:        Schema::dropIfExists('notification_templates');
+modules/observability/database/migrations/2026_06_29_124047_create_telescope_entries_table.php:22:        $schema = Schema::connection($this->getConnection());
+modules/observability/database/migrations/2026_06_29_124047_create_telescope_entries_table.php:64:        $schema = Schema::connection($this->getConnection());
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:18:        Schema::create('pulse_values', function (Blueprint $table) {
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:23:            match ($this->driver()) {
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:24:                'mariadb', 'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:25:                'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:26:                'sqlite' => $table->string('key_hash'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:35:        Schema::create('pulse_entries', function (Blueprint $table) {
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:40:            match ($this->driver()) {
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:41:                'mariadb', 'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:42:                'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:43:                'sqlite' => $table->string('key_hash'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:53:        Schema::create('pulse_aggregates', function (Blueprint $table) {
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:59:            match ($this->driver()) {
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:60:                'mariadb', 'mysql' => $table->char('key_hash', 16)->charset('binary')->virtualAs('unhex(md5(`key`))'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:61:                'pgsql' => $table->uuid('key_hash')->storedAs('md5("key")::uuid'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:62:                'sqlite' => $table->string('key_hash'),
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:80:        Schema::dropIfExists('pulse_values');
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:81:        Schema::dropIfExists('pulse_entries');
+modules/observability/database/migrations/2026_06_29_124052_create_pulse_tables.php:82:        Schema::dropIfExists('pulse_aggregates');
+modules/organizations-teams/database/migrations/2020_05_21_100000_create_teams_table.php:14:        Schema::create('teams', function (Blueprint $table) {
+modules/organizations-teams/database/migrations/2020_05_21_100000_create_teams_table.php:28:        Schema::dropIfExists('teams');
+modules/organizations-teams/database/migrations/2020_05_21_200000_create_team_user_table.php:14:        Schema::create('team_user', function (Blueprint $table) {
+modules/organizations-teams/database/migrations/2020_05_21_200000_create_team_user_table.php:30:        Schema::dropIfExists('team_user');
+modules/organizations-teams/database/migrations/2020_05_21_300000_create_team_invitations_table.php:14:        Schema::create('team_invitations', function (Blueprint $table) {
+modules/organizations-teams/database/migrations/2020_05_21_300000_create_team_invitations_table.php:30:        Schema::dropIfExists('team_invitations');
+modules/organizations-teams/database/migrations/2026_08_01_061000_harden_organization_memberships.php:11:        Schema::create('organizations', function (Blueprint $t): void {
+modules/organizations-teams/database/migrations/2026_08_01_061000_harden_organization_memberships.php:20:        Schema::table('teams', function (Blueprint $t): void {
+modules/organizations-teams/database/migrations/2026_08_01_061000_harden_organization_memberships.php:24:        Schema::table('team_user', function (Blueprint $t): void {
+modules/organizations-teams/database/migrations/2026_08_01_061000_harden_organization_memberships.php:31:        Schema::table('team_invitations', function (Blueprint $t): void {
+modules/organizations-teams/database/migrations/2026_08_01_061000_harden_organization_memberships.php:42:        Schema::table('team_invitations', fn (Blueprint $t) => $t->dropColumn(['token_hash', 'invited_by', 'expires_at', 'accepted_at', 'revoked_at']));
+modules/organizations-teams/database/migrations/2026_08_01_061000_harden_organization_memberships.php:43:        Schema::table('team_user', fn (Blueprint $t) => $t->dropColumn(['status', 'invited_by', 'effective_from', 'effective_until', 'terms_accepted_at']));
+modules/organizations-teams/database/migrations/2026_08_01_061000_harden_organization_memberships.php:44:        Schema::table('teams', function (Blueprint $t): void {
+modules/organizations-teams/database/migrations/2026_08_01_061000_harden_organization_memberships.php:48:        Schema::dropIfExists('organizations');
+modules/profiles/database/migrations/2026_02_16_000001_add_locale_to_users_table.php:14:        Schema::table('users', function (Blueprint $table) {
+modules/profiles/database/migrations/2026_02_16_000001_add_locale_to_users_table.php:24:        Schema::table('users', function (Blueprint $table) {
+modules/profiles/database/migrations/2026_02_16_215049_add_theme_preference_to_users_table.php:14:        Schema::table('users', function (Blueprint $table) {
+modules/profiles/database/migrations/2026_02_16_215049_add_theme_preference_to_users_table.php:24:        Schema::table('users', function (Blueprint $table) {
+modules/profiles/database/migrations/2026_08_01_000000_add_timezone_to_users_table.php:11:        if (! Schema::hasColumn('users', 'timezone')) {
+modules/profiles/database/migrations/2026_08_01_000000_add_timezone_to_users_table.php:12:            Schema::table('users', fn (Blueprint $table) => $table->string('timezone', 64)->nullable()->after('locale'));
+modules/profiles/database/migrations/2026_08_01_000000_add_timezone_to_users_table.php:18:        if (Schema::hasColumn('users', 'timezone')) {
+modules/profiles/database/migrations/2026_08_01_000000_add_timezone_to_users_table.php:19:            Schema::table('users', fn (Blueprint $table) => $table->dropColumn('timezone'));
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:14:        if (Schema::hasTable((string) config('permission.table_names.permissions', 'permissions'))) {
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:30:        Schema::create($tableNames['permissions'], static function (Blueprint $table) {
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:42:        Schema::create($tableNames['roles'], static function (Blueprint $table) use ($teams, $columnNames) {
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:44:            if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:58:        Schema::create($tableNames['model_has_permissions'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams) {
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:81:        Schema::create($tableNames['model_has_roles'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:104:        Schema::create($tableNames['role_has_permissions'], static function (Blueprint $table) use ($tableNames, $pivotRole, $pivotPermission) {
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:135:        Schema::dropIfExists($tableNames['role_has_permissions']);
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:136:        Schema::dropIfExists($tableNames['model_has_roles']);
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:137:        Schema::dropIfExists($tableNames['model_has_permissions']);
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:138:        Schema::dropIfExists($tableNames['roles']);
+modules/roles-permissions/database/migrations/2026_06_29_124225_create_permission_tables.php:139:        Schema::dropIfExists($tableNames['permissions']);
+modules/roles-permissions/database/migrations/2026_08_01_062000_create_break_glass_grants_table.php:11:        Schema::create('authorization_break_glass', function (Blueprint $t): void {
+modules/roles-permissions/database/migrations/2026_08_01_062000_create_break_glass_grants_table.php:25:        Schema::dropIfExists('authorization_break_glass');
+modules/search/database/migrations/2026_02_14_000003_add_search_indexes_to_users_table.php:11:        Schema::table('users', function (Blueprint $table) {
+modules/search/database/migrations/2026_02_14_000003_add_search_indexes_to_users_table.php:20:        Schema::table('users', function (Blueprint $table) {
+modules/sessions-devices/database/migrations/0001_01_01_000003_create_sessions_table.php:11:        if (Schema::hasTable('sessions')) {
+modules/sessions-devices/database/migrations/0001_01_01_000003_create_sessions_table.php:15:        Schema::create('sessions', function (Blueprint $table): void {
+modules/sessions-devices/database/migrations/0001_01_01_000003_create_sessions_table.php:27:        Schema::dropIfExists('sessions');
+modules/settings/database/migrations/2022_12_14_083707_create_settings_table.php:11:        Schema::create(config('settings.repositories.database.table') ?? 'settings', function (Blueprint $table): void {
+modules/settings/database/migrations/2026_08_01_063100_create_scoped_settings_table.php:11:        Schema::create('scoped_settings', function (Blueprint $t): void {
+modules/settings/database/migrations/2026_08_01_063100_create_scoped_settings_table.php:25:        Schema::dropIfExists('scoped_settings');
+modules/two-factor-authentication/database/migrations/2026_06_29_123952_add_two_factor_columns_to_users_table.php:14:        if (Schema::hasColumn('users', 'two_factor_secret')) {
+modules/two-factor-authentication/database/migrations/2026_06_29_123952_add_two_factor_columns_to_users_table.php:18:        Schema::table('users', function (Blueprint $table) {
+modules/two-factor-authentication/database/migrations/2026_06_29_123952_add_two_factor_columns_to_users_table.php:38:        Schema::table('users', function (Blueprint $table) {
+modules/two-factor-authentication/database/migrations/2026_08_01_060000_create_two_factor_trusted_devices_table.php:11:        Schema::create('two_factor_trusted_devices', function (Blueprint $t): void {
+modules/two-factor-authentication/database/migrations/2026_08_01_060000_create_two_factor_trusted_devices_table.php:26:        Schema::dropIfExists('two_factor_trusted_devices');
+modules/webhooks/database/migrations/2026_08_01_030000_create_webhook_tables.php:11:        if (Schema::hasTable('webhook_deliveries')) {
+modules/webhooks/database/migrations/2026_08_01_030000_create_webhook_tables.php:15:        Schema::create('webhook_endpoints', function (Blueprint $t): void {
+modules/webhooks/database/migrations/2026_08_01_030000_create_webhook_tables.php:25:        Schema::create('webhook_deliveries', function (Blueprint $t): void {
+modules/webhooks/database/migrations/2026_08_01_030000_create_webhook_tables.php:43:        Schema::dropIfExists('webhook_deliveries');
+modules/webhooks/database/migrations/2026_08_01_030000_create_webhook_tables.php:44:        Schema::dropIfExists('webhook_endpoints');
+=== database config ===
+<?php
+
+use Illuminate\Support\Str;
+use Pdo\Mysql;
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default Database Connection Name
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify which of the database connections below you wish
+    | to use as your default connection for all database work. Of course
+    | you may use many connections at once using the Database library.
+    |
+    */
+
+    'default' => env('DB_CONNECTION', 'mysql'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Connections
+    |--------------------------------------------------------------------------
+    |
+    | Here are each of the database connections setup for your application.
+    | Of course, examples of configuring each database platform that is
+    | supported by Laravel is shown below to make development simple.
+    |
+    |
+    | All database work in Laravel is done through the PHP PDO facilities
+    | so make sure you have the driver for your particular database of
+    | choice installed on your machine before you begin development.
+    |
+    */
+
+    'connections' => [
+
+        'sqlite' => [
+            'driver' => 'sqlite',
+            'url' => env('DATABASE_URL'),
+            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+        ],
+
+        'mysql' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'pgsql' => [
+            'driver' => 'pgsql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
+        'sqlsrv' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', '1433'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Migration Repository Table
+    |--------------------------------------------------------------------------
+    |
+    | This table keeps track of all the migrations that have already run for
+    | your application. Using this information, we can determine which of
+    | the migrations on disk haven't actually been run in the database.
+    |
+    */
+
+    'migrations' => 'migrations',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Redis Databases
+    |--------------------------------------------------------------------------
+    |
+    | Redis is an open source, fast, and advanced key-value store that also
+    | provides a richer body of commands than a typical key-value system
+    | such as APC or Memcached. Laravel makes it easy to dig right in.
+    |
+    */
+
+    'redis' => [
+
+        'client' => env('REDIS_CLIENT', 'phpredis'),
+
+        'options' => [
+            'cluster' => env('REDIS_CLUSTER', 'redis'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
+        ],
+
+        'default' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_DB', '0'),
+        ],
+
+        'cache' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_CACHE_DB', '1'),
+        ],
+
+    ],
+
+];
+=== tenancy config ===
+<?php
+
+declare(strict_types=1);
+
+use Stancl\Tenancy\Database\Models\Domain;
+use Stancl\Tenancy\Database\Models\Tenant;
+
+return [
+    'tenant_model' => Tenant::class,
+    'id_generator' => Stancl\Tenancy\UUIDGenerator::class,
+
+    'domain_model' => Domain::class,
+
+    /**
+     * The list of domains hosting your central app.
+     *
+     * Only relevant if you're using the domain or subdomain identification middleware.
+     */
+    'central_domains' => [
+        '127.0.0.1',
+        'localhost',
+    ],
+
+    /**
+     * Tenancy bootstrappers are executed when tenancy is initialized.
+     * Their responsibility is making Laravel features tenant-aware.
+     *
+     * To configure their behavior, see the config keys below.
+     */
+    'bootstrappers' => [
+        Stancl\Tenancy\Bootstrappers\DatabaseTenancyBootstrapper::class,
+        Stancl\Tenancy\Bootstrappers\CacheTenancyBootstrapper::class,
+        Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper::class,
+        Stancl\Tenancy\Bootstrappers\QueueTenancyBootstrapper::class,
+        // Stancl\Tenancy\Bootstrappers\RedisTenancyBootstrapper::class, // Note: phpredis is needed
+    ],
+
+    /**
+     * Database tenancy config. Used by DatabaseTenancyBootstrapper.
+     */
+    'database' => [
+        'central_connection' => env('DB_CONNECTION', 'central'),
+
+        /**
+         * Connection used as a "template" for the dynamically created tenant database connection.
+         * Note: don't name your template connection tenant. That name is reserved by package.
+         */
+        'template_tenant_connection' => null,
+
+        /**
+         * Tenant database names are created like this:
+         * prefix + tenant_id + suffix.
+         */
+        'prefix' => 'tenant',
+        'suffix' => '',
+
+        /**
+         * TenantDatabaseManagers are classes that handle the creation & deletion of tenant databases.
+         */
+        'managers' => [
+            'sqlite' => Stancl\Tenancy\TenantDatabaseManagers\SQLiteDatabaseManager::class,
+            'mysql' => Stancl\Tenancy\TenantDatabaseManagers\MySQLDatabaseManager::class,
+            'mariadb' => Stancl\Tenancy\TenantDatabaseManagers\MySQLDatabaseManager::class,
+            'pgsql' => Stancl\Tenancy\TenantDatabaseManagers\PostgreSQLDatabaseManager::class,
+
+        /**
+         * Use this database manager for MySQL to have a DB user created for each tenant database.
+         * You can customize the grants given to these users by changing the $grants property.
+         */
+            // 'mysql' => Stancl\Tenancy\TenantDatabaseManagers\PermissionControlledMySQLDatabaseManager::class,
+
+        /**
+         * Disable the pgsql manager above, and enable the one below if you
+         * want to separate tenant DBs by schemas rather than databases.
+         */
+            // 'pgsql' => Stancl\Tenancy\TenantDatabaseManagers\PostgreSQLSchemaManager::class, // Separate by schema instead of database
+        ],
+    ],
+
+    /**
+     * Cache tenancy config. Used by CacheTenancyBootstrapper.
+     *
+     * This works for all Cache facade calls, cache() helper
+     * calls and direct calls to injected cache stores.
+     *
+     * Each key in cache will have a tag applied on it. This tag is used to
+     * scope the cache both when writing to it and when reading from it.
+     *
+     * You can clear cache selectively by specifying the tag.
+     */
+    'cache' => [
+        'tag_base' => 'tenant', // This tag_base, followed by the tenant_id, will form a tag that will be applied on each cache call.
+    ],
+
+    /**
+     * Filesystem tenancy config. Used by FilesystemTenancyBootstrapper.
+     * https://tenancyforlaravel.com/docs/v3/tenancy-bootstrappers/#filesystem-tenancy-boostrapper.
+     */
+    'filesystem' => [
+        /**
+         * Each disk listed in the 'disks' array will be suffixed by the suffix_base, followed by the tenant_id.
+         */
+        'suffix_base' => 'tenant',
+        'disks' => [
+            'local',
+            'public',
+            // 's3',
+        ],
+
+        /**
+         * Use this for local disks.
+         *
+         * See https://tenancyforlaravel.com/docs/v3/tenancy-bootstrappers/#filesystem-tenancy-boostrapper
+         */
+        'root_override' => [
+            // Disks whose roots should be overridden after storage_path() is suffixed.
+            'local' => '%storage_path%/app/',
+            'public' => '%storage_path%/app/public/',
+        ],
+
+        /**
+         * Should storage_path() be suffixed.
+         *
+         * Note: Disabling this will likely break local disk tenancy. Only disable this if you're using an external file storage service like S3.
+         *
+         * For the vast majority of applications, this feature should be enabled. But in some
+         * edge cases, it can cause issues (like using Passport with Vapor - see #196), so
+         * you may want to disable this if you are experiencing these edge case issues.
+         */
+        'suffix_storage_path' => true,
+
+        /**
+         * By default, asset() calls are made multi-tenant too. You can use global_asset() and mix()
+         * for global, non-tenant-specific assets. However, you might have some issues when using
+         * packages that use asset() calls inside the tenant app. To avoid such issues, you can
+         * disable asset() helper tenancy and explicitly use tenant_asset() calls in places
+         * where you want to use tenant-specific assets (product images, avatars, etc).
+         */
+        'asset_helper_tenancy' => true,
+    ],
+
+    /**
+     * Redis tenancy config. Used by RedisTenancyBootstrapper.
+     *
+     * Note: You need phpredis to use Redis tenancy.
+     *
+     * Note: You don't need to use this if you're using Redis only for cache.
+     * Redis tenancy is only relevant if you're making direct Redis calls,
+     * either using the Redis facade or by injecting it as a dependency.
+     */
+    'redis' => [
+        'prefix_base' => 'tenant', // Each key in Redis will be prepended by this prefix_base, followed by the tenant id.
+        'prefixed_connections' => [ // Redis connections whose keys are prefixed, to separate one tenant's keys from another.
+            // 'default',
+        ],
+    ],
+
+    /**
+     * Features are classes that provide additional functionality
+     * not needed for tenancy to be bootstrapped. They are run
+     * regardless of whether tenancy has been initialized.
+     *
+     * See the documentation page for each class to
+     * understand which ones you want to enable.
+     */
+    'features' => [
+        // Stancl\Tenancy\Features\UserImpersonation::class,
+        // Stancl\Tenancy\Features\TelescopeTags::class,
+        // Stancl\Tenancy\Features\UniversalRoutes::class,
+        // Stancl\Tenancy\Features\TenantConfig::class, // https://tenancyforlaravel.com/docs/v3/features/tenant-config
+        // Stancl\Tenancy\Features\CrossDomainRedirect::class, // https://tenancyforlaravel.com/docs/v3/features/cross-domain-redirect
+        // Stancl\Tenancy\Features\ViteBundler::class,
+    ],
+
+    /**
+     * Should tenancy routes be registered.
+     *
+     * Tenancy routes include tenant asset routes. By default, this route is
+     * enabled. But it may be useful to disable them if you use external
+     * storage (e.g. S3 / Dropbox) or have a custom asset controller.
+     */
+    'routes' => true,
+
+    /**
+     * Parameters used by the tenants:migrate command.
+     */
+    'migration_parameters' => [
+        '--force' => true, // This needs to be true to run migrations in production.
+        '--path' => [database_path('migrations/tenant')],
+        '--realpath' => true,
+    ],
+
+    /**
+     * Parameters used by the tenants:seed command.
+     */
+    'seeder_parameters' => [
+        '--class' => 'DatabaseSeeder', // root seeder class
+        // '--force' => true, // This needs to be true to seed tenant databases in production
+    ],
+];
