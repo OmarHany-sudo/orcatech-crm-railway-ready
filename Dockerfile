@@ -88,7 +88,7 @@ RUN apt-get update \
         libpq-dev \
         unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j"$(nproc)" bcmath curl exif gd intl mbstring opcache pdo_mysql pdo_pgsql pcntl sockets zip \
+    && docker-php-ext-install -j"$(nproc)" bcmath curl exif gd intl mbstring pdo_mysql pdo_pgsql pcntl sockets zip \
     && a2enmod rewrite headers expires \
     && rm -rf /var/lib/apt/lists/*
 
