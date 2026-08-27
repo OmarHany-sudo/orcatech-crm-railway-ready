@@ -31,6 +31,7 @@ use Illuminate\Database\Console\Migrations\FreshCommand;
 use Illuminate\Database\Console\Migrations\InstallCommand;
 use Illuminate\Database\Console\Migrations\MigrateCommand;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Jetstream\Jetstream;
 use Liberu\Foundation\ModuleManager\ModuleDiscovery;
@@ -84,6 +85,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Gate::before(function (?User $user, string $ability): ?bool {
             if (! $user?->isDemoUser()) {
                 return null;

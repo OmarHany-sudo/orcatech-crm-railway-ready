@@ -30,6 +30,10 @@ return Application::configure(basePath: dirname(__DIR__))
         __DIR__.'/../app/Console/Commands',
     ])
     ->withMiddleware(function (Middleware $middleware) {
+        // Railway terminates TLS before forwarding requests to Apache.
+        // Trust the proxy so URL, asset, redirect, and form helpers retain HTTPS.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'auth' => Authenticate::class,
             'guest' => RedirectIfAuthenticated::class,
