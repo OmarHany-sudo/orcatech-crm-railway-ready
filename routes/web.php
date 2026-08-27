@@ -16,22 +16,8 @@ use App\Http\Controllers\SsoLoginController;
 use App\Http\Controllers\TeamInvitationController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TwilioController;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Http\Controllers\TeamInvitationController as JetstreamTeamInvitationController;
-
-// Health check endpoints (for Kubernetes liveness/readiness probes)
-Route::get('/health/startup', fn () => response()->json(['status' => 'starting']))->name('health.startup');
-Route::get('/health/live', fn () => response()->json(['status' => 'live']))->name('health.live');
-Route::get('/health/ready', function () {
-    try {
-        DB::connection()->getPdo();
-
-        return response()->json(['status' => 'ready']);
-    } catch (Exception) {
-        return response()->json(['status' => 'not ready', 'error' => 'Database unavailable'], 503);
-    }
-})->name('health.ready');
 
 // Shared-hosting fallback when public/storage symlinks are unavailable.
 Route::get('/storage/{path}', PublicStorageController::class)

@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
         then: function () {
+            require base_path('routes/health.php');
+
             Route::middleware('web')
                 ->group(base_path('routes/socialstream.php'));
         },
