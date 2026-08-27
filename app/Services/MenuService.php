@@ -11,7 +11,12 @@ class MenuService
 {
     public function buildMenu()
     {
-        $menuItems = Menu::whereNull('parent_id')->orderBy('order')->get();
+        try {
+            $menuItems = Menu::whereNull('parent_id')->orderBy('order')->get();
+        } catch (\Throwable $exception) {
+            report($exception);
+            $menuItems = collect();
+        }
 
         $menu = SpatieMenu::new()
             ->addClass('flex items-center space-x-4')

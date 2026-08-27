@@ -12,7 +12,12 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $knowledgeBaseArticles = KnowledgeBaseArticle::latest()->take(5)->get();
+        try {
+            $knowledgeBaseArticles = KnowledgeBaseArticle::latest()->take(5)->get();
+        } catch (\Throwable $exception) {
+            report($exception);
+            $knowledgeBaseArticles = collect();
+        }
 
         return view('home', ['knowledgeBaseArticles' => $knowledgeBaseArticles]);
     }
